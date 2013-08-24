@@ -1,6 +1,6 @@
 #Contest Rules
 
-[Rules](www.js13games.com)
+[Rules](http://js13kgames.com/)
 
 #Tech Articles
 
