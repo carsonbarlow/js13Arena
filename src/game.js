@@ -24,7 +24,7 @@ window.onload = function(e){
   Game.input.mouse.x = 0;
   Game.input.mouse.y = 0;
   Game.input.mouse.mouse_down = false;
-
+  Game.input.keyboard.id_to_key = {'U+0041':'a', 'U+0053':'s', 'U+0044':'d', 'U+0057':'w', 'U+0020':'space'};
 
 
   Game._time = (new Date).getTime();
@@ -34,19 +34,22 @@ window.onload = function(e){
   Game.graphics.context = Game.graphics.canvas.getContext('2d');
 
   Game.graphics.canvas.addEventListener('mousedown',function(event){
-    console.log('mousedown');
+    Game.input.mouse.mouse_down = true;
   });
   Game.graphics.canvas.addEventListener('mouseup', function(event){
-    console.log('mouseup');
+    Game.input.mouse.mouse_down = false;
   });
   Game.graphics.canvas.addEventListener('mousemove', function(event){
-    console.log(event.screenX);
+    Game.input.mouse.x = event.x - Game.graphics.canvas.offsetLeft;
+    Game.input.mouse.y = event.y - Game.graphics.canvas.offsetTop;
   });
   window.addEventListener('keydown',function(event){
-    console.log(event.keyIdentifier);
+    // console.log(event.keyIdentifier);
+    Game.input.keyboard[Game.input.keyboard.id_to_key[event.keyIdentifier]] = true;
+
   });
   window.addEventListener('keyup',function(event){
-    // alert('key up!');
+    Game.input.keyboard[Game.input.keyboard.id_to_key[event.keyIdentifier]] = false;
   });
 
 
@@ -61,6 +64,7 @@ window.onload = function(e){
 
   var tgo = {};
   Game.update = function(){
+    if (Game.input.keyboard.a){console.log(Game.input.mouse.x);}
     // initializing test rectangle
     if (typeof tgo.test_rect == 'undefined'){
       tgo.test_rect = {};
