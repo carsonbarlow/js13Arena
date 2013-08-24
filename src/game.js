@@ -12,11 +12,40 @@ window.onload = function(e){
   Game.utils.add_default(Game.config.fps, 60);
   Game.utils.add_default(Game.config.canvas_id, 'game_canvas');
 
+  // input
+  Game.input = {};
+  Game.input.keyboard = {};
+  Game.input.keyboard.a = false;
+  Game.input.keyboard.s = false;
+  Game.input.keyboard.d = false;
+  Game.input.keyboard.w = false;
+  Game.input.keyboard.space = false;
+  Game.input.mouse = {};
+  Game.input.mouse.x = 0;
+  Game.input.mouse.y = 0;
+  Game.input.mouse.mouse_down = false;
+
+
+
   Game._time = (new Date).getTime();
 
   Game.graphics = {};
   Game.graphics.canvas = document.getElementById(Game.config.canvas_id);
   Game.graphics.context = Game.graphics.canvas.getContext('2d');
+
+  Game.graphics.canvas.addEventListener('mousedown',function(event){
+    console.log('mousedown');
+  });
+  Game.graphics.canvas.addEventListener('mouseup', function(event){
+    console.log('mouseup');
+  });
+  window.addEventListener('keydown',function(event){
+    console.log(event.keyIdentifier);
+  });
+  window.addEventListener('keyup',function(event){
+    // alert('key up!');
+  });
+
 
   // GAME LOOP
   Game.game_loop = setInterval(function(){
@@ -26,10 +55,10 @@ window.onload = function(e){
     } 
     Game.graphics.draw(Game.graphics.context);
   }, 1000/Game.config.fps);
-  
+
   var tgo = {};
   Game.update = function(){
-    // initializing...
+    // initializing test rectangle
     if (typeof tgo.test_rect == 'undefined'){
       tgo.test_rect = {};
       tgo.test_rect.x = 0;
