@@ -1,19 +1,34 @@
 
 window.onload = function(e){
-  var canvas = document.getElementById('game_canvas');
-  var ctx = canvas.getContext('2d');
-  var game_loop = setInterval(function(){
-  while ((new Date).getTime() > game_time){
-    game_time += 17;
-    game_update();
-  }
-    
-    game_draw();
-  },17);
+  if (typeof Game == 'undefined'){Game = {};}
 
-  var game_time = (new Date).getTime();
+
+  //utils
+  Game.utils = {};
+  Game.utils.add_default = function(_var, val){ if (typeof _var == 'undefined'){_var = val;}}
+
+  // initial setup
+  Game.utils.add_default(Game.config, {});
+  Game.utils.add_default(Game.config.fps, 60);
+  Game.utils.add_default(Game.config.canvas_id, 'game_canvas');
+
+  Game._time = (new Date).getTime();
+
+  Game.graphics = {};
+  Game.graphics.canvas = document.getElementById(Game.config.canvas_id);
+  Game.graphics.context = Game.graphics.canvas.getContext('2d');
+
+  // GAME LOOP
+  Game.game_loop = setInterval(function(){
+    while ((new Date).getTime() > Game._time){
+      Game._time += Game.config.fps;
+      Game.update();
+    } 
+    Game.graphics.draw(Game.graphics.context);
+  }, 1000/Game.config.fps);
+  
   var tgo = {};
-  var game_update = function(){
+  Game.update = function(){
     // initializing...
     if (typeof tgo.test_rect == 'undefined'){
       tgo.test_rect = {};
@@ -36,8 +51,8 @@ window.onload = function(e){
     }
   };
 
-  var game_draw = function(){
-    canvas.width = canvas.width;
+  Game.graphics.draw = function(ctx){
+    Game.graphics.canvas.width = Game.graphics.canvas.width;
     ctx.fillRect(tgo.test_rect.x, tgo.test_rect.y, 50, 50);
   };
 };
