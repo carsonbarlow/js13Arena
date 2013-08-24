@@ -39,6 +39,9 @@ window.onload = function(e){
   Game.graphics.canvas.addEventListener('mouseup', function(event){
     console.log('mouseup');
   });
+  Game.graphics.canvas.addEventListener('mousemove', function(event){
+    console.log(event.screenX);
+  });
   window.addEventListener('keydown',function(event){
     console.log(event.keyIdentifier);
   });
