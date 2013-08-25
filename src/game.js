@@ -69,7 +69,7 @@ window.onload = function(e){
     luck: 100,
     health: 10,
     health_regen: 1,
-    speed: 50,
+    speed: 200,
     melee: {
       damage: 4,
       reach: 10,
@@ -91,69 +91,50 @@ window.onload = function(e){
       cooldown_left: 0
     },
     transform: {
-      position: {x: 200, y: 200, z: 1},
-      rotation: {x: 0, y: 0, z: 1 },
+      position: {x: 10, y: 10, z: 1},
+      rotation: {x: 0, y: 0, z: 0 },
       scale: {x: 4, y: 4},
       offset: {x: 0, y: 0},
+      width: 64,
+      height: 64,
       image: 'player.gif'
     }
   }
+  Game.graphics.draw_list.push(Game.player.transform);
 
   // GAME_LOOP_0002
   Game.game_loop = setInterval(function(){
     while ((new Date).getTime() > Game._time){
-      Game._time += Game.config.fps;
+      Game._time += 1000/Game.config.fps;
       Game.update();
     } 
     Game.graphics.draw(Game.graphics.context);
   }, 1000/Game.config.fps);
 
-  var tgo = {};
+  
   Game.update = function(){
-    if (Game.input.keyboard.a){console.log(Game.player.health);}
-    // initializing test rectangle
-    if (typeof tgo.test_rect == 'undefined'){
-      Game.graphics.draw_list.push(Game.player.transform);
-      tgo.test_rect = {};
-      tgo.test_rect.x = 0;
-      tgo.test_rect.max_x = 200;
-      tgo.test_rect.y = 50;
-      tgo.test_rect.goLeft = false;
-    }
-
-    if (tgo.test_rect.goLeft){
-      tgo.test_rect.x -= 1;
-      if (tgo.test_rect.x <= 0){
-        tgo.test_rect.goLeft = false;
-      }
-    }else{
-      tgo.test_rect.x += 1;
-      if (tgo.test_rect.x >= tgo.test_rect.max_x){
-        tgo.test_rect.goLeft = true;
-      }
-    }
+    if (Game.input.keyboard.a){Game.player.transform.position.x -= (Game.player.speed / Game.config.fps);}
+    if (Game.input.keyboard.d){Game.player.transform.position.x += (Game.player.speed / Game.config.fps);}
+    if (Game.input.keyboard.w){Game.player.transform.position.y -= (Game.player.speed / Game.config.fps);}
+    if (Game.input.keyboard.s){Game.player.transform.position.y += (Game.player.speed / Game.config.fps);}
   };
 
   // GAME_DRAW_003
   var image_loaded = false; // <-- this will be refactored
   Game.graphics.draw = function(ctx){
-    if (!image_loaded){
-      if (Game.graphics.image.width){
-        image_loaded = true;
-        // Game.graphics.image.height = 64;
-        // Game.graphics.image.width = 64;
-      }
-    }
-    // console.log(Game.graphics.image.width);
-    Game.graphics.canvas.width = Game.graphics.canvas.width;
+    if (!image_loaded){if (Game.graphics.image.width){image_loaded = true;}}
+    // Game.graphics.canvas.width = Game.graphics.canvas.width;
+    ctx.clearRect(0, 0, Game.graphics.canvas.width, Game.graphics.canvas.height);
+    var tX, tY;
     Game.graphics.draw_list.map(function(t){
       ctx.save();
-      ctx.translate(42,42);  // <-- refactor  (42 => position + 1/2 demention)
+      tX = t.position.x + (t.width/2);
+      tY = t.position.y + (t.height/2);
+      ctx.translate(tX,tY);
       ctx.rotate(t.rotation.z);
-      ctx.translate(-42,-42);  // <-- refactor
-      ctx.drawImage(Game.graphics.image,t.offset.x,t.offset.y,64,64,10,10,64,64);  // <-- refactor
+      ctx.translate(-tX,-tY);
+      ctx.drawImage(Game.graphics.image,t.offset.x,t.offset.y,t.width,t.height,t.position.x,t.position.y,t.width,t.height);  // <-- refactor
       ctx.restore();
     });
-    ctx.fillRect(tgo.test_rect.x, tgo.test_rect.y, 50, 50);
   };
 };
