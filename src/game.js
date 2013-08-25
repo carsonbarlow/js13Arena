@@ -1,7 +1,17 @@
 
 window.onload = function(e){
-  if (typeof Game == 'undefined'){Game = {};}
+  
+  /****  CONTENTS ****
+  
+  * PLAYER_0001
+  * GAME_LOOP_0002
+  * GAME_DRAW_003
 
+
+
+  */
+
+  if (typeof Game == 'undefined'){Game = {};}
 
   //utils
   Game.utils = {};
@@ -31,6 +41,9 @@ window.onload = function(e){
   Game.graphics = {};
   Game.graphics.canvas = document.getElementById(Game.config.canvas_id);
   Game.graphics.context = Game.graphics.canvas.getContext('2d');
+  Game.graphics.draw_list = [];
+  Game.graphics.image = document.createElement('img');
+  Game.graphics.image.src = 'images/player.gif';
 
   // input events
   window.addEventListener('mousedown',function(event){
@@ -51,7 +64,7 @@ window.onload = function(e){
     Game.input.keyboard[Game.input.keyboard.id_to_key[event.keyIdentifier]] = false;
   });
 
-  // player
+  // PLAYER_0001
   Game.player = {
     luck: 100,
     health: 10,
@@ -76,10 +89,17 @@ window.onload = function(e){
       range: 25,
       cooldown: 10000,
       cooldown_left: 0
+    },
+    transform: {
+      position: {x: 200, y: 200, z: 1},
+      rotation: {x: 0, y: 0, z: 1 },
+      scale: {x: 4, y: 4},
+      offset: {x: 0, y: 0},
+      image: 'player.gif'
     }
   }
 
-  // GAME LOOP
+  // GAME_LOOP_0002
   Game.game_loop = setInterval(function(){
     while ((new Date).getTime() > Game._time){
       Game._time += Game.config.fps;
@@ -93,6 +113,7 @@ window.onload = function(e){
     if (Game.input.keyboard.a){console.log(Game.player.health);}
     // initializing test rectangle
     if (typeof tgo.test_rect == 'undefined'){
+      Game.graphics.draw_list.push(Game.player.transform);
       tgo.test_rect = {};
       tgo.test_rect.x = 0;
       tgo.test_rect.max_x = 200;
@@ -113,8 +134,19 @@ window.onload = function(e){
     }
   };
 
+  // GAME_DRAW_003
+  var image_loaded = false; // <-- this will be refactored
   Game.graphics.draw = function(ctx){
+    if (!image_loaded){if (Game.graphics.image.width){image_loaded = true}}
     Game.graphics.canvas.width = Game.graphics.canvas.width;
+    Game.graphics.draw_list.map(function(t){
+      ctx.save();
+      ctx.translate(42,42);  // <-- refactor  (42 => position + 1/2 demention)
+      ctx.rotate(t.rotation.z);
+      ctx.translate(-42,-42);  // <-- refactor
+      ctx.drawImage(Game.graphics.image,t.offset.x,t.offset.y,16,16,10,10,64,64);  // <-- refactor
+      ctx.restore();
+    });
     ctx.fillRect(tgo.test_rect.x, tgo.test_rect.y, 50, 50);
   };
 };
