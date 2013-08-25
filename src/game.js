@@ -43,7 +43,7 @@ window.onload = function(e){
   Game.graphics.context = Game.graphics.canvas.getContext('2d');
   Game.graphics.draw_list = [];
   Game.graphics.image = document.createElement('img');
-  Game.graphics.image.src = 'images/player.gif';
+  Game.graphics.image.src = 'images/player2.gif';
 
   // input events
   window.addEventListener('mousedown',function(event){
@@ -137,14 +137,21 @@ window.onload = function(e){
   // GAME_DRAW_003
   var image_loaded = false; // <-- this will be refactored
   Game.graphics.draw = function(ctx){
-    if (!image_loaded){if (Game.graphics.image.width){image_loaded = true}}
+    if (!image_loaded){
+      if (Game.graphics.image.width){
+        image_loaded = true;
+        // Game.graphics.image.height = 64;
+        // Game.graphics.image.width = 64;
+      }
+    }
+    // console.log(Game.graphics.image.width);
     Game.graphics.canvas.width = Game.graphics.canvas.width;
     Game.graphics.draw_list.map(function(t){
       ctx.save();
       ctx.translate(42,42);  // <-- refactor  (42 => position + 1/2 demention)
       ctx.rotate(t.rotation.z);
       ctx.translate(-42,-42);  // <-- refactor
-      ctx.drawImage(Game.graphics.image,t.offset.x,t.offset.y,16,16,10,10,64,64);  // <-- refactor
+      ctx.drawImage(Game.graphics.image,t.offset.x,t.offset.y,64,64,10,10,64,64);  // <-- refactor
       ctx.restore();
     });
     ctx.fillRect(tgo.test_rect.x, tgo.test_rect.y, 50, 50);
