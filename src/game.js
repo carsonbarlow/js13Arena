@@ -1,15 +1,14 @@
-
 window.onload = function(e){
-  
+
   /****  CONTENTS ****
-  
-  * PLAYER_0001
-  * GAME_LOOP_0002
-  * GAME_DRAW_003
+
+   * PLAYER_0001
+   * GAME_LOOP_0002
+   * GAME_DRAW_003
 
 
 
-  */
+*/
 
   if (typeof Game == 'undefined'){Game = {};}
 
@@ -21,6 +20,7 @@ window.onload = function(e){
   Game.utils.add_default(Game.config, {});
   Game.utils.add_default(Game.config.fps, 60);
   Game.utils.add_default(Game.config.canvas_id, 'game_canvas');
+  Game.utils.add_default(Game.config.fps_counter_id, 'fps_counter');
 
   // input
   Game.input = {};
@@ -40,6 +40,7 @@ window.onload = function(e){
   Game._time = (new Date).getTime();
   Game.graphics = {};
   Game.graphics.canvas = document.getElementById(Game.config.canvas_id);
+  Game.graphics.fps_counter = document.getElementById(Game.config.fps_counter_id);
   Game.graphics.context = Game.graphics.canvas.getContext('2d');
   Game.graphics.draw_list = [];
   Game.graphics.image = document.createElement('img');
@@ -103,20 +104,33 @@ window.onload = function(e){
   Game.graphics.draw_list.push(Game.player.transform);
 
   // GAME_LOOP_0002
-  Game.game_loop = setInterval(function(){
-    while ((new Date).getTime() > Game._time){
-      Game._time += 1000/Game.config.fps;
-      Game.update();
-    } 
-    Game.graphics.draw(Game.graphics.context);
-  }, 1000/Game.config.fps);
+  Game.run = (function() {
+    var update_interval = 1000 / Game.config.fps;
+    start_tick = next_tick = last_tick = (new Date).getTime();
+    num_frames = 0;
 
-  
-  Game.update = function(){
-    if (Game.input.keyboard.a){Game.player.transform.position.x -= (Game.player.speed / Game.config.fps);}
-    if (Game.input.keyboard.d){Game.player.transform.position.x += (Game.player.speed / Game.config.fps);}
-    if (Game.input.keyboard.w){Game.player.transform.position.y -= (Game.player.speed / Game.config.fps);}
-    if (Game.input.keyboard.s){Game.player.transform.position.y += (Game.player.speed / Game.config.fps);}
+    return function() {
+      current_tick = (new Date).getTime();
+      while ( current_tick > next_tick ) {
+        delta = (current_tick - last_tick) / 1000;
+        Game.update(delta);
+        next_tick += update_interval;
+        last_tick = (new Date).getTime();
+      }
+
+      Game.graphics.draw(Game.graphics.context);
+
+      fps = (num_frames / (current_tick - start_tick)) * 1000;
+      Game.graphics.fps_counter.textContent = Math.round(fps);
+      num_frames++;
+    }
+  })();
+
+  Game.update = function(delta){
+    if (Game.input.keyboard.a){Game.player.transform.position.x -= (Game.player.speed * delta);}
+    if (Game.input.keyboard.d){Game.player.transform.position.x += (Game.player.speed * delta);}
+    if (Game.input.keyboard.w){Game.player.transform.position.y -= (Game.player.speed * delta);}
+    if (Game.input.keyboard.s){Game.player.transform.position.y += (Game.player.speed * delta);}
   };
 
   // GAME_DRAW_003
@@ -137,4 +151,21 @@ window.onload = function(e){
       ctx.restore();
     });
   };
+
+  if( window.webkitRequestAnimationFrame) {
+    window.each_frame = function(cb) {
+      var _cb = function() { cb(); webkitRequestAnimationFrame(_cb); }
+      _cb();
+    };
+  } else if (window.mozRequestAnimationFrame) {
+    window.each_frame = function(cb) {
+      var _cb = function() { cb(); mozRequestAnimationFrame(_cb); }
+      _cb();
+    };
+  } else {
+    window.each_frame = function(cb) {
+      setInterval(cb, 1000 / Game.config.fps);
+    }
+  }
+  window.each_frame(Game.run);
 };
