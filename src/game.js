@@ -14,7 +14,18 @@ window.onload = function(e){
 
   //utils
   Game.utils = {};
-  Game.utils.add_default = function(_var, val){ if (typeof _var == 'undefined'){_var = val;}}
+  Game.utils.add_default = function(_var, val){ if (typeof _var == 'undefined'){_var = val;}};
+  (function(){
+    var x_dif, y_dif, a_tan;
+    Game.utils.point_to = function(from_x, from_y, to_x, to_y){
+      x_dif = to_x - from_x;
+      y_dif = to_y - from_y;
+      a_tan = Math.atan2(y_dif,x_dif);
+      return a_tan+1.570796327;
+    };
+  })();
+  
+
 
   // initial setup
   Game.utils.add_default(Game.config, {});
@@ -92,12 +103,12 @@ window.onload = function(e){
       cooldown_left: 0
     },
     transform: {
-      position: {x: 10, y: 10, z: 1},
-      rotation: {x: 0, y: 0, z: 0 },
+      position: {x: 100, y: 100, z: 1},
+      rotation: {x: 0, y: 0, z: 0.5},
       scale: {x: 4, y: 4},
-      offset: {x: 0, y: 0},
-      width: 64,
-      height: 64,
+      offset: {x: 4, y: 4},
+      width: 54,
+      height: 54,
       image: 'player.gif'
     }
   }
@@ -131,6 +142,8 @@ window.onload = function(e){
     if (Game.input.keyboard.d){Game.player.transform.position.x += (Game.player.speed * delta);}
     if (Game.input.keyboard.w){Game.player.transform.position.y -= (Game.player.speed * delta);}
     if (Game.input.keyboard.s){Game.player.transform.position.y += (Game.player.speed * delta);}
+    // console.log()
+    Game.player.transform.rotation.z = Game.utils.point_to(Game.player.transform.position.x, Game.player.transform.position.y, Game.input.mouse.x, Game.input.mouse.y);
   };
 
   // GAME_DRAW_003
@@ -142,14 +155,19 @@ window.onload = function(e){
     var tX, tY;
     Game.graphics.draw_list.map(function(t){
       ctx.save();
-      tX = t.position.x + (t.width/2);
-      tY = t.position.y + (t.height/2);
+      tX = t.position.x;
+      tY = t.position.y;
       ctx.translate(tX,tY);
       ctx.rotate(t.rotation.z);
       ctx.translate(-tX,-tY);
-      ctx.drawImage(Game.graphics.image,t.offset.x,t.offset.y,t.width,t.height,t.position.x,t.position.y,t.width,t.height);  // <-- refactor
+      ctx.drawImage(Game.graphics.image,t.offset.x,t.offset.y,t.width,t.height,t.position.x-(t.width/2),t.position.y-(t.height/2),t.width,t.height);  // <-- refactor
       ctx.restore();
     });
+    ctx.moveTo(100,0);
+    ctx.lineTo(100,Game.graphics.canvas.height);
+    ctx.moveTo(0,100);
+    ctx.lineTo(Game.graphics.canvas.width, 100);
+    ctx.stroke();
   };
 
   if( window.webkitRequestAnimationFrame) {
