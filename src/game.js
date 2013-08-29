@@ -16,14 +16,29 @@ window.onload = function(e){
   Game.utils = {};
   Game.utils.add_default = function(_var, val){ if (typeof _var == 'undefined'){_var = val;}};
   (function(){
-    var x_dif, y_dif, a_tan;
+    var x_dif, y_dif, a_tan, hyp;
     Game.utils.point_to = function(from_x, from_y, to_x, to_y){
       x_dif = to_x - from_x;
       y_dif = to_y - from_y;
       a_tan = Math.atan2(y_dif,x_dif);
-      return a_tan+1.570796327;
+      return a_tan;
     };
+    Game.utils.normalize = function(from_x, from_y, to_x, to_y){
+      x_dif = to_x - from_x;
+      y_dif = to_y - from_y;
+      hyp = (x_dif*x_dif)+(y_dif*y_dif);
+      hyp = Math.sqrt(hyp);
+      return [(x_dif/hyp),(y_dif/hyp)];
+    }
   })();
+  (function(){
+    var id = 0;
+    Game.utils.assign_id = function(){return id++;};
+  })();
+  Game.utils.cool_off = function(obj, delta){
+    obj.cooldown_left -= delta*1000;
+    obj.cooldown_left =(obj.cooldown_left < 0)? 0 : obj.cooldown_left;
+  };
   
 
 
@@ -32,6 +47,7 @@ window.onload = function(e){
   Game.utils.add_default(Game.config.fps, 60);
   Game.utils.add_default(Game.config.canvas_id, 'game_canvas');
   Game.utils.add_default(Game.config.fps_counter_id, 'fps_counter');
+  Game.projectiles = [];
 
   // input
   Game.input = {};
@@ -82,6 +98,7 @@ window.onload = function(e){
     health: 10,
     health_regen: 1,
     speed: 200,
+    selected_attack: 'ranged',
     melee: {
       damage: 4,
       reach: 10,
@@ -90,9 +107,11 @@ window.onload = function(e){
     },
     ranged: {
       damage: 3,
-      fire_rate: 400,
-      ammo: 8,
-      max_ammo: 8,
+      speed: 750,
+      cooldown: 500,
+      cooldown_left: 0,
+      ammo: 6,
+      max_ammo: 6,
       reload_time: 5000,
       reload_time_left: 0
     },
@@ -103,13 +122,14 @@ window.onload = function(e){
       cooldown_left: 0
     },
     transform: {
+      id : Game.utils.assign_id(),
+      visible: true,
       position: {x: 100, y: 100, z: 1},
       rotation: {x: 0, y: 0, z: 0.5},
       scale: {x: 4, y: 4},
       offset: {x: 4, y: 4},
       width: 54,
-      height: 54,
-      image: 'player.gif'
+      height: 54
     }
   }
   Game.graphics.draw_list.push(Game.player.transform);
@@ -138,13 +158,68 @@ window.onload = function(e){
   })();
 
   Game.update = function(delta){
-    if (Game.input.keyboard.a){Game.player.transform.position.x -= (Game.player.speed * delta);}
-    if (Game.input.keyboard.d){Game.player.transform.position.x += (Game.player.speed * delta);}
-    if (Game.input.keyboard.w){Game.player.transform.position.y -= (Game.player.speed * delta);}
-    if (Game.input.keyboard.s){Game.player.transform.position.y += (Game.player.speed * delta);}
-    // console.log()
-    Game.player.transform.rotation.z = Game.utils.point_to(Game.player.transform.position.x, Game.player.transform.position.y, Game.input.mouse.x, Game.input.mouse.y);
+    Game.update_player(Game.player, delta);
+    Game.update_projectiles(delta);
+    
   };
+
+  Game.update_player = function(P, delta){
+    if (Game.input.keyboard.a){P.transform.position.x -= (P.speed * delta);}
+    if (Game.input.keyboard.d){P.transform.position.x += (P.speed * delta);}
+    if (Game.input.keyboard.w){P.transform.position.y -= (P.speed * delta);}
+    if (Game.input.keyboard.s){P.transform.position.y += (P.speed * delta);}
+    P.transform.rotation.z = Game.utils.point_to(P.transform.position.x, P.transform.position.y, Game.input.mouse.x, Game.input.mouse.y);
+    Game.utils.cool_off(P.melee,delta);
+    Game.utils.cool_off(P.ranged,delta);
+    Game.utils.cool_off(P.bomb,delta);
+    if (Game.input.mouse.mouse_down){
+      if (P[P.selected_attack].cooldown_left == 0){
+        P[P.selected_attack].ammo--;
+        Game.projectiles.push({
+          id: Game.utils.assign_id(),
+          source: P,
+          power: P[P.selected_attack].damage,
+          type: 'vector',
+          speed: P[P.selected_attack].speed,
+          vol: Game.utils.normalize(P.transform.position.x, P.transform.position.y, Game.input.mouse.x, Game.input.mouse.y),
+          range: 250,
+          transform: {
+            id : Game.utils.assign_id(),
+            visible: true,
+            position: {x: P.transform.position.x, y: P.transform.position.y, z: P.transform.position.z},
+            rotation: {x: 0, y: 0, z: 0.5},
+            scale: {x: 4, y: 4},
+            offset: {x: 4, y: 4},
+            width: 12,
+            height: 12
+          }
+        });
+        Game.graphics.draw_list.push(Game.projectiles[Game.projectiles.length-1].transform);
+        if (P[P.selected_attack].ammo == 0){
+          P[P.selected_attack].ammo = P[P.selected_attack].max_ammo;
+          P[P.selected_attack].cooldown_left = P[P.selected_attack].reload_time;
+        }else{
+          P[P.selected_attack].cooldown_left = P[P.selected_attack].cooldown;
+        }
+        console.log('boom');
+      }
+    }
+  }
+
+
+  // PROJECTILES
+  Game.update_projectiles = function (delta){
+    Game.projectiles = Game.projectiles.filter(function(p){
+      switch (p.type){
+        case 'vector':
+          p.transform.position.x += (p.vol[0]*p.speed*delta);
+          p.transform.position.y += (p.vol[1]*p.speed*delta);
+          p.range -= p.speed*delta;
+          return p.transform.visible = (p.range > 0);
+        break;
+      }
+    });
+  }
 
   // GAME_DRAW_003
   var image_loaded = false; // <-- this will be refactored
@@ -153,15 +228,17 @@ window.onload = function(e){
     // Game.graphics.canvas.width = Game.graphics.canvas.width;
     ctx.clearRect(0, 0, Game.graphics.canvas.width, Game.graphics.canvas.height);
     var tX, tY;
-    Game.graphics.draw_list.map(function(t){
+    Game.graphics.draw_list = Game.graphics.draw_list.filter(function(t){
+      if (!t.visible){return false;}
       ctx.save();
       tX = t.position.x;
       tY = t.position.y;
       ctx.translate(tX,tY);
-      ctx.rotate(t.rotation.z);
+      ctx.rotate(t.rotation.z+1.570796327);
       ctx.translate(-tX,-tY);
       ctx.drawImage(Game.graphics.image,t.offset.x,t.offset.y,t.width,t.height,t.position.x-(t.width/2),t.position.y-(t.height/2),t.width,t.height);  // <-- refactor
       ctx.restore();
+      return true;
     });
     ctx.moveTo(100,0);
     ctx.lineTo(100,Game.graphics.canvas.height);
