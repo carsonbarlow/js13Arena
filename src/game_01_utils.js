@@ -14,15 +14,18 @@ Game.utils.add_default = function(_var, val){ if (typeof _var == 'undefined'){_v
     hyp = (x_dif*x_dif)+(y_dif*y_dif);
     hyp = Math.sqrt(hyp);
     return [(x_dif/hyp),(y_dif/hyp)];
-  }
+  };
   Game.utils.randomize_direction = function(){
     return  Game.utils.normalize(0,0,Math.random()*10-5,Math.random()*10-5);
-  }
+  };
   Game.utils.proximity = function(from_x, from_y, to_x, to_y){
     x_dif = to_x - from_x;
     y_dif = to_y - from_y;
     return Math.sqrt((x_dif*x_dif)+(y_dif*y_dif));
-  }
+  };
+  Game.utils.collision = function(obj_1, obj_2){
+    return (Game.utils.proximity(obj_1.transform.position.x, obj_1.transform.position.y,obj_2.transform.position.x, obj_2.transform.position.y) < (obj_1.col+obj_2.col));
+  };
 })();
 (function(){
   var id = 0;

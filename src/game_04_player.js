@@ -65,7 +65,8 @@ Game.update_player = function(P, delta){
           offset: {x: 4, y: 4, r: 1},
           width: 12,
           height: 12
-        }
+        },
+        col: 6
       });
       Game.graphics.draw_list.push(Game.projectiles[Game.projectiles.length-1].transform);
       if (P[P.selected_attack].ammo == 0){

@@ -16,6 +16,7 @@ Game.spawn_enemy = function(stats, x_pos, y_pos){
     height: new_enemy.graphic[3]
   };
   new_enemy.vol = [0,0];
+  new_enemy.col = 14;
   new_enemy.wonder = 0;
   new_enemy.standing = 500;
   new_enemy.chasing = false;
