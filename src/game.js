@@ -2,17 +2,24 @@ window.onload = function(e){
 
   /****  CONTENTS ****
 
-   * PLAYER_0001
-   * GAME_LOOP_0002
-   * GAME_DRAW_003
-
-
-
+   * UTILS_001
+   * INITIAL_SETUP_002
+   * INPUT_003
+   * GRAPHICS_004
+   * INPUT_EVENTS_005
+   * PLAYER_006
+   * ENEMY_STATS
+   * GAME_LOOP_007
+   * GAME_UPDATE_008
+   * UPDATE_PLAYER_009
+   * UPDATE_PROJECTILES_010
+   * UPDATE_ENEMIES_011
+   * GAME_DRAW_012
 */
 
   if (typeof Game == 'undefined'){Game = {};}
 
-  //utils
+  //UTILS_001
   Game.utils = {};
   Game.utils.add_default = function(_var, val){ if (typeof _var == 'undefined'){_var = val;}};
   (function(){
@@ -30,6 +37,14 @@ window.onload = function(e){
       hyp = Math.sqrt(hyp);
       return [(x_dif/hyp),(y_dif/hyp)];
     }
+    Game.utils.randomize_direction = function(){
+      return  Game.utils.normalize(0,0,Math.random()*10-5,Math.random()*10-5);
+    }
+    Game.utils.proximity = function(from_x, from_y, to_x, to_y){
+      x_dif = to_x - from_x;
+      y_dif = to_y - from_y;
+      return Math.sqrt((x_dif*x_dif)+(y_dif*y_dif));
+    }
   })();
   (function(){
     var id = 0;
@@ -39,17 +54,26 @@ window.onload = function(e){
     obj.cooldown_left -= delta*1000;
     obj.cooldown_left =(obj.cooldown_left < 0)? 0 : obj.cooldown_left;
   };
+  Game.utils.clone = function (obj) {
+    if (null == obj || "object" != typeof obj) return obj;
+    var copy = obj.constructor();
+    for (var attr in obj) {
+        if (obj.hasOwnProperty(attr)) copy[attr] = obj[attr];
+    }
+    return copy;
+  };
   
 
 
-  // initial setup
+  // INITIAL_SETUP_002
   Game.utils.add_default(Game.config, {});
   Game.utils.add_default(Game.config.fps, 60);
   Game.utils.add_default(Game.config.canvas_id, 'game_canvas');
   Game.utils.add_default(Game.config.fps_counter_id, 'fps_counter');
   Game.projectiles = [];
+  Game.enemies = []
 
-  // input
+  // INPUT_003
   Game.input = {};
   Game.input.keyboard = {};
   Game.input.keyboard.a = false;
@@ -63,7 +87,7 @@ window.onload = function(e){
   Game.input.mouse.mouse_down = false;
   Game.input.keyboard.id_to_key = {'U+0041':'a', 'U+0053':'s', 'U+0044':'d', 'U+0057':'w', 'U+0020':'space'};
 
-  // graphics
+  // GRAPHICS_004
   Game._time = (new Date).getTime();
   Game.graphics = {};
   Game.graphics.canvas = document.getElementById(Game.config.canvas_id);
@@ -71,9 +95,9 @@ window.onload = function(e){
   Game.graphics.context = Game.graphics.canvas.getContext('2d');
   Game.graphics.draw_list = [];
   Game.graphics.image = document.createElement('img');
-  Game.graphics.image.src = 'images/player2.gif';
+  Game.graphics.image.src = 'images.png';
 
-  // input events
+  // INPUT_EVENTS_005
   window.addEventListener('mousedown',function(event){
     Game.input.mouse.mouse_down = true;
   });
@@ -92,7 +116,7 @@ window.onload = function(e){
     Game.input.keyboard[Game.input.keyboard.id_to_key[event.keyIdentifier]] = false;
   });
 
-  // PLAYER_0001
+  // PLAYER_006
   Game.player = {
     luck: 100,
     health: 10,
@@ -122,19 +146,43 @@ window.onload = function(e){
       cooldown_left: 0
     },
     transform: {
-      id : Game.utils.assign_id(),
       visible: true,
       position: {x: 100, y: 100, z: 1},
       rotation: {x: 0, y: 0, z: 0.5},
       scale: {x: 4, y: 4},
-      offset: {x: 4, y: 4},
-      width: 54,
-      height: 54
+      offset: {x: 0, y: 0, r: 1},
+      width: 40,
+      height: 36
     }
   }
   Game.graphics.draw_list.push(Game.player.transform);
 
-  // GAME_LOOP_0002
+  Game.spawn_enemy = function(stats, x_pos, y_pos){
+    var new_enemy = Game.utils.clone(stats);
+    new_enemy.transform = {
+      visible: true,
+      position: {x: x_pos, y: y_pos, z: 1},
+      rotation: {x: 0, y: 0, z: 0},
+      scale: {x: 4, y: 4},
+      offset: {x: new_enemy.graphic[0], y: new_enemy.graphic[1], r: new_enemy.graphic[4]},
+      width: new_enemy.graphic[2],
+      height: new_enemy.graphic[3]
+    };
+    new_enemy.vol = [0,0];
+    new_enemy.wonder = 0;
+    new_enemy.standing = 500;
+    new_enemy.chasing = false;
+    Game.enemies.push(new_enemy);
+    Game.graphics.draw_list.push(new_enemy.transform);
+  };
+
+  // ENEMY_STATS
+  Game.enemy_stats = {
+    lame_brain : {health: 6, speed: 70, attack: 'melee_1', damage: 1, movement: 'wonder', graphic: [220,44,32,40,0] }
+  }
+  Game.spawn_enemy(Game.enemy_stats.lame_brain,500,100);
+
+  // GAME_LOOP_007
   Game.run = (function() {
     var update_interval = 1000 / Game.config.fps;
     start_tick = next_tick = last_tick = (new Date).getTime();
@@ -157,12 +205,16 @@ window.onload = function(e){
     }
   })();
 
+  // GAME_UPDATE_008
   Game.update = function(delta){
     Game.update_player(Game.player, delta);
     Game.update_projectiles(delta);
+    Game.update_enemies(delta);
     
   };
 
+
+  // UPDATE_PLAYER_009
   Game.update_player = function(P, delta){
     if (Game.input.keyboard.a){P.transform.position.x -= (P.speed * delta);}
     if (Game.input.keyboard.d){P.transform.position.x += (P.speed * delta);}
@@ -176,7 +228,6 @@ window.onload = function(e){
       if (P[P.selected_attack].cooldown_left == 0){
         P[P.selected_attack].ammo--;
         Game.projectiles.push({
-          id: Game.utils.assign_id(),
           source: P,
           power: P[P.selected_attack].damage,
           type: 'vector',
@@ -184,12 +235,11 @@ window.onload = function(e){
           vol: Game.utils.normalize(P.transform.position.x, P.transform.position.y, Game.input.mouse.x, Game.input.mouse.y),
           range: 250,
           transform: {
-            id : Game.utils.assign_id(),
             visible: true,
             position: {x: P.transform.position.x, y: P.transform.position.y, z: P.transform.position.z},
             rotation: {x: 0, y: 0, z: 0.5},
             scale: {x: 4, y: 4},
-            offset: {x: 4, y: 4},
+            offset: {x: 4, y: 4, r: 1},
             width: 12,
             height: 12
           }
@@ -207,7 +257,7 @@ window.onload = function(e){
   }
 
 
-  // PROJECTILES
+  // UPDATE_PROJECTILES_010
   Game.update_projectiles = function (delta){
     Game.projectiles = Game.projectiles.filter(function(p){
       switch (p.type){
@@ -219,22 +269,50 @@ window.onload = function(e){
         break;
       }
     });
-  }
+  };
 
-  // GAME_DRAW_003
+  // UPDATE_ENEMIES_011
+  Game.update_enemies = function (delta){
+    Game.enemies = Game.enemies.filter(function(mob){
+      mob.chasing = (Game.utils.proximity(mob.transform.position.x, mob.transform.position.y, Game.player.transform.position.x, Game.player.transform.position.y) < 200);
+      if (mob.chasing){
+        mob.vol = Game.utils.normalize(mob.transform.position.x, mob.transform.position.y, Game.player.transform.position.x, Game.player.transform.position.y);
+      }else if (mob.standing){
+        mob.standing -= delta * 1000;
+        if (mob.standing <= 0){
+          mob.standing = 0;
+          mob.vol = Game.utils.randomize_direction();
+          mob.wonder = Math.random()*275+75;
+        }
+      }else if (mob.wonder){
+        mob.wonder -= mob.speed * delta;
+        if (mob.wonder <= 0){
+          mob.wonder = 0;
+          mob.vol = [0,0];
+          mob.standing = Math.random()*250+500;
+        }
+      }
+      mob.transform.position.x += (mob.vol[0]*mob.speed*delta);
+      mob.transform.position.y += (mob.vol[1]*mob.speed*delta);
+      return true;
+    });
+  };
+
+  // GAME_DRAW_012
   var image_loaded = false; // <-- this will be refactored
   Game.graphics.draw = function(ctx){
     if (!image_loaded){if (Game.graphics.image.width){image_loaded = true;}}
     // Game.graphics.canvas.width = Game.graphics.canvas.width;
     ctx.clearRect(0, 0, Game.graphics.canvas.width, Game.graphics.canvas.height);
-    var tX, tY;
+    var tX, tY, tR;
     Game.graphics.draw_list = Game.graphics.draw_list.filter(function(t){
       if (!t.visible){return false;}
       ctx.save();
       tX = t.position.x;
       tY = t.position.y;
+      tR = t.rotation.z+(t.offset.r * -1.570796327);
       ctx.translate(tX,tY);
-      ctx.rotate(t.rotation.z+1.570796327);
+      ctx.rotate(tR);
       ctx.translate(-tX,-tY);
       ctx.drawImage(Game.graphics.image,t.offset.x,t.offset.y,t.width,t.height,t.position.x-(t.width/2),t.position.y-(t.height/2),t.width,t.height);  // <-- refactor
       ctx.restore();
@@ -244,6 +322,8 @@ window.onload = function(e){
     ctx.lineTo(100,Game.graphics.canvas.height);
     ctx.moveTo(0,100);
     ctx.lineTo(Game.graphics.canvas.width, 100);
+    ctx.moveTo(500,0);
+    ctx.lineTo(500,Game.graphics.canvas.height);
     ctx.stroke();
   };
 
