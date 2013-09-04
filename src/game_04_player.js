@@ -52,7 +52,7 @@ Game.update_player = function(P, delta){
   Game.utils.cool_off(P.ranged,delta);
   Game.utils.cool_off(P.bomb,delta);
   if (P.ranged.reload_time_left == 0){
-    if (Game.input.mouse.mouse_down){
+    if (Game.input.mouse.left){
       P.do_ranged(P);
     }  
   }else{

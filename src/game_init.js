@@ -1,5 +1,7 @@
 window.onload = function(e){
 
+  document.oncontextmenu = document.body.oncontextmenu = function() {return false;}
+
   Game.utils.add_default(Game.config, {});
   Game.utils.add_default(Game.config.fps, 60);
   Game.utils.add_default(Game.config.canvas_id, 'game_canvas');

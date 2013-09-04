@@ -8,14 +8,47 @@
   Game.input.mouse = {};
   Game.input.mouse.x = 0;
   Game.input.mouse.y = 0;
-  Game.input.mouse.mouse_down = false;
+  Game.input.mouse.left = false;
+  Game.input.mouse.right = false;
   Game.input.keyboard.id_to_key = {'U+0041':'a', 'U+0053':'s', 'U+0044':'d', 'U+0057':'w', 'U+0020':'space'};
 
-  window.addEventListener('mousedown',function(event){
-    Game.input.mouse.mouse_down = true;
+  Game.graphics.canvas.addEventListener('mousedown',function(event){
+    
+    if (!event.which && event.button) {
+      if (event.button & 1) event.which = 1      // Left
+      else if (event.button & 4) event.which = 2 // Middle
+      else if (event.button & 2) event.which = 3 // Right
+    } 
+    switch (event.button || event.which){
+      case 1:
+        Game.input.mouse.left = true;
+      break;
+      case 2:
+        Game.input.mouse.right = true;
+      break;
+      case 3:
+
+      break;
+    }
+    event.preventDefault();
   });
   window.addEventListener('mouseup', function(event){
-    Game.input.mouse.mouse_down = false;
+    if (!event.which && event.button) {
+      if (event.button & 1) event.which = 1      // Left
+      else if (event.button & 4) event.which = 2 // Middle
+      else if (event.button & 2) event.which = 3 // Right
+    } 
+    switch (event.button || event.which){
+      case 1:
+        Game.input.mouse.left = false;
+      break;
+      case 2:
+        Game.input.mouse.right = false;
+      break;
+      case 3:
+
+      break;
+    } 
   });
   Game.graphics.canvas.addEventListener('mousemove', function(event){
     Game.input.mouse.x = event.x - Game.graphics.canvas.offsetLeft;
