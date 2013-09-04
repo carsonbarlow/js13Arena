@@ -3,6 +3,7 @@ Game.player = {
   hp: 10,
   max_hp: 10,
   health_regen: 1,
+  health_regen_time: 5000,
   speed: 200,
   selected_attack: 'ranged',
   melee: {
@@ -52,13 +53,18 @@ Game.update_player = function(P, delta){
   Game.utils.cool_off(P.ranged,delta);
   Game.utils.cool_off(P.bomb,delta);
   if (P.ranged.reload_time_left == 0){
-    if (Game.input.mouse.left){
-      P.do_ranged(P);
-    }  
+    if (Game.input.mouse.left){ P.do_ranged(P);}  
   }else{
     P.ranged.reload_time_left -= delta * 1000;
     if (P.ranged.reload_time_left < 0){P.ranged.reload_time_left = 0;}
   }
+  if (P.hp < P.max_hp){
+    if ((P.health_regen_time -= delta * 1000) < 0){
+      Game.utils.damage(P, -1);
+      P.health_regen_time += 5000/P.health_regen;
+    }
+  }
+
   
 }
 
