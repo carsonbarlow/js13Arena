@@ -18,13 +18,14 @@ Game.utils.add_default = function(_var, val){ if (typeof _var == 'undefined'){_v
   Game.utils.randomize_direction = function(){
     return  Game.utils.normalize(0,0,Math.random()*10-5,Math.random()*10-5);
   };
-  Game.utils.proximity = function(from_x, from_y, to_x, to_y){
-    x_dif = to_x - from_x;
-    y_dif = to_y - from_y;
+  Game.utils.proximity = function(obj_1,obj_2){
+
+    x_dif = obj_2.transform.position.x - obj_1.transform.position.x;
+    y_dif = obj_2.transform.position.y - obj_1.transform.position.y;
     return Math.sqrt((x_dif*x_dif)+(y_dif*y_dif));
   };
   Game.utils.collision = function(obj_1, obj_2){
-    return (Game.utils.proximity(obj_1.transform.position.x, obj_1.transform.position.y,obj_2.transform.position.x, obj_2.transform.position.y) < (obj_1.col+obj_2.col));
+    return (Game.utils.proximity(obj_1,obj_2) < (obj_1.col+obj_2.col));
   };
 })();
 (function(){
@@ -35,6 +36,14 @@ Game.utils.cool_off = function(obj, delta){
   obj.cooldown_left -= delta*1000;
   obj.cooldown_left =(obj.cooldown_left < 0)? 0 : obj.cooldown_left;
 };
+Game.utils.damage = function(obj, amount){
+  obj.hp -= amount;
+  if (obj.hp > obj.max_hp){obj.hp = obj.max_hp;}
+  else if (obj.hp <= 0){
+    obj.hp = 0;
+    obj.die();
+  }
+}
 Game.utils.clone = function (obj) {
   if (null == obj || "object" != typeof obj) return obj;
   var copy = obj.constructor();

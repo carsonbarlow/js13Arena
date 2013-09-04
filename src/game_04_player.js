@@ -1,6 +1,7 @@
 Game.player = {
   luck: 100,
-  health: 10,
+  hp: 10,
+  max_hp: 10,
   health_regen: 1,
   speed: 200,
   selected_attack: 'ranged',
@@ -37,6 +38,9 @@ Game.player = {
   }
 }
 Game.graphics.draw_list.push(Game.player.transform);
+Game.player.die = function(){
+  console.log(this.hp);
+}
 
 Game.update_player = function(P, delta){
   if (Game.input.keyboard.a){P.transform.position.x -= (P.speed * delta);}
@@ -47,14 +51,26 @@ Game.update_player = function(P, delta){
   Game.utils.cool_off(P.melee,delta);
   Game.utils.cool_off(P.ranged,delta);
   Game.utils.cool_off(P.bomb,delta);
-  if (Game.input.mouse.mouse_down){
-    if (P[P.selected_attack].cooldown_left == 0){
-      P[P.selected_attack].ammo--;
+  if (P.ranged.reload_time_left == 0){
+    if (Game.input.mouse.mouse_down){
+      P.do_ranged(P);
+    }  
+  }else{
+    P.ranged.reload_time_left -= delta * 1000;
+    if (P.ranged.reload_time_left < 0){P.ranged.reload_time_left = 0;}
+  }
+  
+}
+
+
+Game.player.do_ranged = function(P){
+  if (P.ranged.cooldown_left == 0){
+      P.ranged.ammo--;
       Game.projectiles.push({
         source: P,
-        power: P[P.selected_attack].damage,
+        power: P.ranged.damage,
         type: 'vector',
-        speed: P[P.selected_attack].speed,
+        speed: P.ranged.speed,
         vol: Game.utils.normalize(P.transform.position.x, P.transform.position.y, Game.input.mouse.x, Game.input.mouse.y),
         range: 250,
         transform: {
@@ -69,13 +85,13 @@ Game.update_player = function(P, delta){
         col: 6
       });
       Game.graphics.draw_list.push(Game.projectiles[Game.projectiles.length-1].transform);
-      if (P[P.selected_attack].ammo == 0){
-        P[P.selected_attack].ammo = P[P.selected_attack].max_ammo;
-        P[P.selected_attack].cooldown_left = P[P.selected_attack].reload_time;
-      }else{
-        P[P.selected_attack].cooldown_left = P[P.selected_attack].cooldown;
+      if (P.ranged.ammo == 0){
+        P.ranged.ammo = P.ranged.max_ammo;
+        P.ranged.reload_time_left = P.ranged.reload_time;
       }
-      console.log('boom');
+      P.ranged.cooldown_left = P.ranged.cooldown;
     }
-  }
-}
+};
+
+
+

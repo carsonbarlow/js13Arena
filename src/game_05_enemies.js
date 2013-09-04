@@ -20,6 +20,8 @@ Game.spawn_enemy = function(stats, x_pos, y_pos){
   new_enemy.wonder = 0;
   new_enemy.standing = 500;
   new_enemy.chasing = false;
+  new_enemy.attack_wind_up = 500;
+  new_enemy.attack_wind_up_left = 500;
   Game.enemies.push(new_enemy);
   Game.graphics.draw_list.push(new_enemy.transform);
 };
@@ -28,9 +30,18 @@ Game.spawn_enemy(Game.enemy_stats.lame_brain,500,100);
 
 Game.update_enemies = function (delta){
   Game.enemies = Game.enemies.filter(function(mob){
-    mob.chasing = (Game.utils.proximity(mob.transform.position.x, mob.transform.position.y, Game.player.transform.position.x, Game.player.transform.position.y) < 200);
+    mob.chasing = (Game.utils.proximity(mob, Game.player) < 200);
     if (mob.chasing){
-      mob.vol = Game.utils.normalize(mob.transform.position.x, mob.transform.position.y, Game.player.transform.position.x, Game.player.transform.position.y);
+      if (Game.utils.proximity(mob,Game.player) < 20){
+        mob.vol = [0, 0];
+        mob.attack_wind_up_left -= delta * 1000;
+        if (mob.attack_wind_up_left < 0){
+          Game.utils.damage(Game.player,mob.damage);
+          mob.attack_wind_up_left = mob.attack_wind_up;
+        }
+      } else {
+        mob.vol = Game.utils.normalize(mob.transform.position.x, mob.transform.position.y, Game.player.transform.position.x, Game.player.transform.position.y);
+      }
     }else if (mob.standing){
       mob.standing -= delta * 1000;
       if (mob.standing <= 0){
