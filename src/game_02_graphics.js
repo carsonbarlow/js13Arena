@@ -4,24 +4,38 @@
   Game.graphics.context = Game.graphics.canvas.getContext('2d');
   Game.graphics.draw_list = [];
   Game.graphics.image = document.createElement('img');
-  Game.graphics.image.src = 'images.png';
+  Game.graphics.image.src = 'pixel_2.png';
+  Game.graphics.camera = {x:0,y:0};
+  // Game.graphics.bg_canvas = document.createElement('canvas');
+  // Game.graphics.bg_canvas.width = Game.graphics.canvas.width;
 
   var image_loaded = false; // <-- this will be refactored
   Game.graphics.draw = function(ctx){
     if (!image_loaded){if (Game.graphics.image.width){image_loaded = true;}}
     // Game.graphics.canvas.width = Game.graphics.canvas.width;
     ctx.clearRect(0, 0, Game.graphics.canvas.width, Game.graphics.canvas.height);
+
+    //BACKGROUND
+    for (var by = 0; by < 24; by++){
+      for (var bx = 0; bx < 32; bx++){
+        if (by == 0 || by == 23 || bx == 0 || bx == 31){
+          ctx.drawImage(Game.graphics.image,40,80,40,40,bx*40-Game.graphics.camera.x,by*40-Game.graphics.camera.y,40,40);
+        }else{
+          ctx.drawImage(Game.graphics.image,0,80,40,40,bx*40-Game.graphics.camera.x,by*40-Game.graphics.camera.y,40,40);
+        }
+      }
+    }
     var tX, tY, tR;
     Game.graphics.draw_list = Game.graphics.draw_list.filter(function(t){
       if (!t.visible){return false;}
       ctx.save();
-      tX = t.position.x;
-      tY = t.position.y;
+      tX = t.position.x-Game.graphics.camera.x;
+      tY = t.position.y-Game.graphics.camera.y;
       tR = t.rotation.z+(t.offset.r * -1.570796327);
       ctx.translate(tX,tY);
       ctx.rotate(tR);
       ctx.translate(-tX,-tY);
-      ctx.drawImage(Game.graphics.image,t.offset.x,t.offset.y,t.width,t.height,t.position.x-(t.width/2),t.position.y-(t.height/2),t.width,t.height);  // <-- refactor
+      ctx.drawImage(Game.graphics.image,t.offset.x,t.offset.y,t.width,t.height,(t.position.x-(t.width/2))-Game.graphics.camera.x,(t.position.y-(t.height/2))-Game.graphics.camera.y,t.width,t.height);
       ctx.restore();
       return true;
     });

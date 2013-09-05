@@ -5,6 +5,7 @@ Game.player = {
   health_regen: 1,
   health_regen_time: 5000,
   speed: 200,
+  col: 19,
   selected_attack: 'ranged',
   melee: {
     damage: 4,
@@ -48,7 +49,14 @@ Game.update_player = function(P, delta){
   if (Game.input.keyboard.d){P.transform.position.x += (P.speed * delta);}
   if (Game.input.keyboard.w){P.transform.position.y -= (P.speed * delta);}
   if (Game.input.keyboard.s){P.transform.position.y += (P.speed * delta);}
-  P.transform.rotation.z = Game.utils.point_to(P.transform.position.x, P.transform.position.y, Game.input.mouse.x, Game.input.mouse.y);
+  P.transform.rotation.z = Game.utils.point_to(P.transform.position.x-Game.graphics.camera.x , P.transform.position.y-Game.graphics.camera.y, Game.input.mouse.x, Game.input.mouse.y);
+  if (P.transform.position.x < 40 + P.col){P.transform.position.x = 40 + P.col;}
+  if (P.transform.position.x > 1240 - P.col){P.transform.position.x = 1240 - P.col;}
+  if (P.transform.position.y < 40 + P.col){P.transform.position.y = 40 + P.col;}
+  if (P.transform.position.y > 920 - P.col){P.transform.position.y = 920 - P.col;}
+  //adjust the camera
+  if (P.transform.position.x > 320 && P.transform.position.x < 960){ Game.graphics.camera.x = P.transform.position.x - 320;}
+  if (P.transform.position.y > 240 && P.transform.position.y < 720){ Game.graphics.camera.y = P.transform.position.y - 240;}
   Game.utils.cool_off(P.melee,delta);
   Game.utils.cool_off(P.ranged,delta);
   Game.utils.cool_off(P.bomb,delta);
@@ -77,7 +85,7 @@ Game.player.do_ranged = function(P){
         power: P.ranged.damage,
         type: 'vector',
         speed: P.ranged.speed,
-        vol: Game.utils.normalize(P.transform.position.x, P.transform.position.y, Game.input.mouse.x, Game.input.mouse.y),
+        vol: Game.utils.normalize(P.transform.position.x-Game.graphics.camera.x, P.transform.position.y-Game.graphics.camera.y, Game.input.mouse.x, Game.input.mouse.y),
         range: 250,
         transform: {
           visible: true,
