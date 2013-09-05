@@ -20,8 +20,8 @@ Game.spawn_enemy = function(stats, x_pos, y_pos){
   new_enemy.wonder = 0;
   new_enemy.standing = 500;
   new_enemy.chasing = false;
-  new_enemy.attack_wind_up = 500;
-  new_enemy.attack_wind_up_left = 500;
+  new_enemy.attack_wind_up = 400;
+  new_enemy.attack_wind_up_left = 400;
   Game.enemies.push(new_enemy);
   Game.graphics.draw_list.push(new_enemy.transform);
 };
@@ -32,7 +32,7 @@ Game.update_enemies = function (delta){
   Game.enemies = Game.enemies.filter(function(mob){
     mob.chasing = (Game.utils.proximity(mob, Game.player) < 200);
     if (mob.chasing){
-      if (Game.utils.proximity(mob,Game.player) < 20){
+      if (Game.utils.proximity(mob,Game.player) < 35){
         mob.vol = [0, 0];
         mob.attack_wind_up_left -= delta * 1000;
         if (mob.attack_wind_up_left < 0){
@@ -59,6 +59,10 @@ Game.update_enemies = function (delta){
     }
     mob.transform.position.x += (mob.vol[0]*mob.speed*delta);
     mob.transform.position.y += (mob.vol[1]*mob.speed*delta);
+    if (mob.transform.position.x < 40 + mob.col){mob.transform.position.x = 40 + mob.col; mob.vol[0] *= -1;}
+    if (mob.transform.position.x > 1240 - mob.col){mob.transform.position.x = 1240 - mob.col; mob.vol[0] *= -1;}
+    if (mob.transform.position.y < 40 + mob.col){mob.transform.position.y = 40 + mob.col; mob.vol[1] *= -1;}
+    if (mob.transform.position.y > 920 - mob.col){mob.transform.position.y = 920 - mob.col; mob.vol[1] *= -1;}
     return true;
   });
 };
