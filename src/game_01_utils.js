@@ -32,9 +32,9 @@ Game.utils.add_default = function(_var, val){ if (typeof _var == 'undefined'){_v
   var id = 0;
   Game.utils.assign_id = function(){return id++;};
 })();
-Game.utils.cool_off = function(obj, delta){
-  obj.cooldown_left -= delta*1000;
-  obj.cooldown_left =(obj.cooldown_left < 0)? 0 : obj.cooldown_left;
+Game.utils.count_down = function(obj, prop, delta){
+  obj[prop] -= delta*1000;
+  obj[prop] =(obj[prop] < 0)? 0 : obj[prop];
 };
 Game.utils.damage = function(obj, amount){
   obj.hp -= amount;

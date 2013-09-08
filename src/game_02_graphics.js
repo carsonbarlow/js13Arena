@@ -4,7 +4,7 @@
   Game.graphics.context = Game.graphics.canvas.getContext('2d');
   Game.graphics.draw_list = [];
   Game.graphics.image = document.createElement('img');
-  Game.graphics.image.src = 'pixel_2.png';
+  Game.graphics.image.src = 'sprites.png';
   Game.graphics.camera = {x:0,y:0};
   // Game.graphics.bg_canvas = document.createElement('canvas');
   // Game.graphics.bg_canvas.width = Game.graphics.canvas.width;
@@ -19,9 +19,9 @@
     for (var by = 0; by < 24; by++){
       for (var bx = 0; bx < 32; bx++){
         if (by == 0 || by == 23 || bx == 0 || bx == 31){
-          ctx.drawImage(Game.graphics.image,40,80,40,40,bx*40-Game.graphics.camera.x,by*40-Game.graphics.camera.y,40,40);
+          ctx.drawImage(Game.graphics.image,4,389,56,56,bx*40-Game.graphics.camera.x,by*40-Game.graphics.camera.y,40,40);
         }else{
-          ctx.drawImage(Game.graphics.image,0,80,40,40,bx*40-Game.graphics.camera.x,by*40-Game.graphics.camera.y,40,40);
+          ctx.drawImage(Game.graphics.image,4,244,25,25,bx*40-Game.graphics.camera.x,by*40-Game.graphics.camera.y,40,40);
         }
       }
     }
@@ -39,14 +39,6 @@
       ctx.restore();
       return true;
     });
-    // ctx.moveTo(100,0);
-    // ctx.lineTo(100,Game.graphics.canvas.height);
-    // ctx.moveTo(0,100);
-    // ctx.lineTo(Game.graphics.canvas.width, 100);
-    // ctx.moveTo(500,0);
-    // ctx.lineTo(500,Game.graphics.canvas.height);
-    // ctx.stroke();
-
 
     //UI
     //HP:
