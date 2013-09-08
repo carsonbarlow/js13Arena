@@ -6,8 +6,8 @@ Game.update_enemies = function (delta){
     if (mob.chasing){
       if (Game.utils.proximity(mob,Game.player) < 35){
         mob.vol = [0, 0];
-        mob.attack_wind_up_left -= delta * 1000;
-        if (mob.attack_wind_up_left < 0){
+        Game.utils.count_down(mob,'attack_wind_up_left',delta);
+        if (!mob.attack_wind_up_left){
           Game.utils.damage(Game.player,mob.damage);
           mob.attack_wind_up_left = mob.attack_wind_up;
         }
@@ -15,9 +15,8 @@ Game.update_enemies = function (delta){
         mob.vol = Game.utils.normalize(mob.transform.position.x, mob.transform.position.y, Game.player.transform.position.x, Game.player.transform.position.y);
       }
     }else if (mob.standing){
-      mob.standing -= delta * 1000;
-      if (mob.standing <= 0){
-        mob.standing = 0;
+      Game.utils.count_down(mob,'standing',delta);
+      if (!mob.standing){
         mob.vol = Game.utils.randomize_direction();
         mob.wonder = Math.random()*275+75;
       }

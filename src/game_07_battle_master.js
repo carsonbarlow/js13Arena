@@ -1,10 +1,10 @@
 (function () {
 
   Game.enemy_stats = [
-    {type: 'lame_brain', hp: 6.0, speed: 70.0, attack: 'melee_1', damage: 1.0, movement: 'wonder', graphic: [220,44,32,40,0]},
-    {type: 'stand_n_shoot', hp: 6.0, speed: 70.0, attack: 'melee_1', damage: 1.0, movement: 'wonder', graphic: [150,44,32,40,0]},
-    {type: 'back_stabber', hp: 6.0, speed: 70.0, attack: 'melee_1', damage: 1.0, movement: 'wonder', graphic: [100,44,32,40,0]},
-    {type: 'big_n_heavy', hp: 6.0, speed: 70.0, attack: 'melee_1', damage: 1.0, movement: 'wonder', graphic: [0,44,32,40,0]}
+    {type: 'lame_brain', hp: 6.0, speed: 70.0, attack: 'melee_1', damage: 1.0, movement: 'wonder', graphic: [4,4,28,22,0]},
+    {type: 'stand_n_shoot', hp: 6.0, speed: 70.0, attack: 'melee_1', damage: 1.0, movement: 'wonder', graphic: [4,136,32,18,0]},
+    {type: 'back_stabber', hp: 6.0, speed: 70.0, attack: 'melee_1', damage: 1.0, movement: 'wonder', graphic: [6,62,20,18,0]},
+    {type: 'big_n_heavy', hp: 6.0, speed: 70.0, attack: 'melee_1', damage: 1.0, movement: 'wonder', graphic: [66,159,32,32,0]}
   ]
 
   Game.spawn_enemy = function(stats, x_pos, y_pos){
@@ -77,5 +77,31 @@
     };
   }
 
+  var portal_layout = [];
+  portal_layout[3] = [1,2];
+  portal_layout[4] = [2,2];
+  portal_layout[5] = [2,1,2];
+  portal_layout[6] = [2,2,2];
+  portal_layout[7] = [2,3,2];
+  portal_layout[8] = [3,2,3];
+  portal_layout[9] = [3,3,3];
+  portal_layout[10] = [3,4,3];
+  portal_layout[11] = [4,3,4];
+  portal_layout[12] = [4,4,4];
+  portal_layout[13] = [3,4,3,3];
+  portal_layout[14] = [3,4,3,4];
+  portal_layout[15] = [4,4,4,3];
+  portal_layout[16] = [4,4,4,4];
+
+  Game.bm.set_portals = function(count){
+    var portal_spacing = [];
+    portal_layout[count].map(function(num){
+      portal_spacing.push(Game.graphics.canvas.width/(num+1));
+    });
+  };
+
+
+
+  Game.bm.set_portals(3)
   Game.bm.do_wave();
 })();

@@ -5,7 +5,7 @@ Game.player = {
   health_regen: 1,
   health_regen_time: 5000,
   speed: 200,
-  col: 19,
+  col: 12,
   selected_attack: 'ranged',
   melee: {
     damage: 4,
@@ -34,9 +34,9 @@ Game.player = {
     position: {x: 100, y: 100, z: 1},
     rotation: {x: 0, y: 0, z: 0.5},
     scale: {x: 4, y: 4},
-    offset: {x: 0, y: 0, r: 1},
-    width: 40,
-    height: 36
+    offset: {x: 0, y: 105, r: 1},
+    width: 28,
+    height: 21
   }
 }
 Game.graphics.draw_list.push(Game.player.transform);
@@ -57,9 +57,9 @@ Game.update_player = function(P, delta){
   //adjust the camera
   if (P.transform.position.x > 320 && P.transform.position.x < 960){ Game.graphics.camera.x = P.transform.position.x - 320;}
   if (P.transform.position.y > 240 && P.transform.position.y < 720){ Game.graphics.camera.y = P.transform.position.y - 240;}
-  Game.utils.cool_off(P.melee,delta);
-  Game.utils.cool_off(P.ranged,delta);
-  Game.utils.cool_off(P.bomb,delta);
+  Game.utils.count_down(P.melee,'cooldown_left',delta);
+  Game.utils.count_down(P.ranged,'cooldown_left',delta);
+  Game.utils.count_down(P.bomb,'cooldown_left',delta);
   if (P.ranged.reload_time_left == 0){
     if (Game.input.mouse.left){ P.do_ranged(P);}  
   }else{
