@@ -1,8 +1,12 @@
+(function(){
+
+
+
   Game.graphics = {};
   Game.graphics.canvas = document.getElementById(Game.config.canvas_id);
   Game.graphics.fps_counter = document.getElementById(Game.config.fps_counter_id);
   Game.graphics.context = Game.graphics.canvas.getContext('2d');
-  Game.graphics.draw_list = [];
+  Game.graphics.draw_list = [[],[],[]];
   Game.graphics.image = document.createElement('img');
   Game.graphics.image.src = 'sprites.png';
   Game.graphics.camera = {x:0,y:0};
@@ -26,20 +30,21 @@
       }
     }
     var tX, tY, tR;
-    Game.graphics.draw_list = Game.graphics.draw_list.filter(function(t){
-      if (!t.visible){return false;}
-      ctx.save();
-      tX = t.position.x-Game.graphics.camera.x;
-      tY = t.position.y-Game.graphics.camera.y;
-      tR = t.rotation.z+(t.offset.r * -1.570796327);
-      ctx.translate(tX,tY);
-      ctx.rotate(tR);
-      ctx.translate(-tX,-tY);
-      ctx.drawImage(Game.graphics.image,t.offset.x,t.offset.y,t.width,t.height,(t.position.x-(t.width/2))-Game.graphics.camera.x,(t.position.y-(t.height/2))-Game.graphics.camera.y,t.width,t.height);
-      ctx.restore();
-      return true;
+    Game.graphics.draw_list.map(function(dl){
+      dl = dl.filter(function(t){
+        if (!t.visible){return false;}
+        ctx.save();
+        tX = t.position.x-Game.graphics.camera.x;
+        tY = t.position.y-Game.graphics.camera.y;
+        tR = t.rotation.z+(t.offset.r * -1.570796327);
+        ctx.translate(tX,tY);
+        ctx.rotate(tR);
+        ctx.translate(-tX,-tY);
+        ctx.drawImage(Game.graphics.image,t.offset.x,t.offset.y,t.width,t.height,(t.position.x-(t.width/2))-Game.graphics.camera.x,(t.position.y-(t.height/2))-Game.graphics.camera.y,t.width,t.height);
+        ctx.restore();
+        return true;
+      });
     });
-
     //UI
     //HP:
     ctx.save();
@@ -69,4 +74,6 @@
 
   };
 
+
+})();
 

@@ -39,7 +39,7 @@ Game.player = {
     height: 21
   }
 }
-Game.graphics.draw_list.push(Game.player.transform);
+Game.graphics.draw_list[1].push(Game.player.transform);
 Game.player.die = function(){
   console.log(this.hp);
 }
@@ -89,16 +89,16 @@ Game.player.do_ranged = function(P){
         range: 250,
         transform: {
           visible: true,
-          position: {x: P.transform.position.x, y: P.transform.position.y, z: P.transform.position.z},
+          position: {x: P.transform.position.x, y: P.transform.position.y, z: 2},
           rotation: {x: 0, y: 0, z: 0.5},
           scale: {x: 4, y: 4},
-          offset: {x: 4, y: 4, r: 1},
+          offset: {x: 14, y: 316, r: 1},
           width: 12,
-          height: 12
+          height: 13
         },
         col: 6
       });
-      Game.graphics.draw_list.push(Game.projectiles[Game.projectiles.length-1].transform);
+      Game.graphics.draw_list[2].push(Game.projectiles[Game.projectiles.length-1].transform);
       if (P.ranged.ammo == 0){
         P.ranged.ammo = P.ranged.max_ammo;
         P.ranged.reload_time_left = P.ranged.reload_time;

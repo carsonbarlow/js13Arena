@@ -11,6 +11,7 @@ window.onload = function(e){
     Game.update_player(Game.player, delta);
     Game.update_projectiles(delta);
     Game.update_enemies(delta);
+    Game.update_battle_master(Game.bm,delta);
     
   };
 
