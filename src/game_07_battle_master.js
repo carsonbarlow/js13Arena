@@ -11,8 +11,6 @@
   var spawn_cooldown = 750;
   Game.bm.spawn_cooldown_left = 0;
   Game.update_battle_master = function(B,delta){
-
-
     if (enemies_to_spawn){
       Game.utils.count_down(B, 'spawn_cooldown_left', delta);
       if (!B.spawn_cooldown_left){

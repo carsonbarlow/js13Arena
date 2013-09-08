@@ -36,6 +36,12 @@ Game.update_enemies = function (delta){
     if (mob.transform.position.y > 920 - mob.col){mob.transform.position.y = 920 - mob.col; mob.vol[1] *= -1;}
     return true;
   });
+
+  Game.enemy_functions = {}
+  Game.enemy_functions.do_damage = function(amount){
+    console.log(this);
+  }
+
 };
 
   
