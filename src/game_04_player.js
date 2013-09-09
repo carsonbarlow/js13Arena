@@ -29,10 +29,13 @@
       reload_time_left: 0
     },
     bomb: {
+      active: false,
       damage: 10,
-      range: 25,
+      col: 100,
       cooldown: 10000,
-      cooldown_left: 0
+      cooldown_left: 0,
+      duration: 200,
+      duration_left: 0
     },
     transform: {
       visible: true,
@@ -76,6 +79,11 @@
       P.do_melee(P);
     }
     if (P.melee.active){P.update_melee(P, P.melee, delta);}
+    if (Game.input.keyboard.space && !P.bomb.cooldown_left){
+      P.bomb.cooldown_left = P.bomb.cooldown;
+      P.do_bomb(P);
+    }
+    if (P.bomb.active){P.update_bomb(P.bomb, delta);}
     if (P.hp < P.max_hp){
       if ((P.health_regen_time -= delta * 1000) < 0){
         Game.utils.damage(P, -1);
@@ -88,7 +96,6 @@
 
 
   Game.player.do_melee = function(P){
-    console.log('Melee!!');
     P.melee.active = true;
     P.melee.transform.visible = true;
     P.melee.duration_left = P.melee.duration;
@@ -109,20 +116,11 @@
       M.transform.position.x += melee_offset_x * M.transform.width;
       M.transform.position.y += melee_offset_y * M.transform.width;
       // check collision
-
       melee_col_obj.transform.position.x += melee_offset_x * M.reach;
       melee_col_obj.transform.position.y += melee_offset_y * M.reach;
       Game.enemies.map(function(E){
         if(Game.utils.collision(E,melee_col_obj)){Game.enemy_functions.do_damage.call(E,M.damage);}
-      });
-      
-
-
-
-
-
-
-
+      });      
     }else{
       M.active = false;
       M.transform.visible = false;
@@ -159,7 +157,32 @@
       }
   };
 
+  Game.player.do_bomb = function(P){
+    P.bomb.active = true;
+    P.bomb.duration_left = P.bomb.duration;
+    P.bomb.transform.position.x = P.transform.position.x;
+    P.bomb.transform.position.y = P.transform.position.y;
+  }
+  Game.player.update_bomb = function(B, delta){
+    Game.utils.count_down(B, 'duration_left', delta);
+    if (!B.duration_left){
+      B.active = false;
+      Game.enemies.map(function(E){
+        if(Game.utils.collision(E,B)){Game.enemy_functions.do_damage.call(E,B.damage);}
+      });
+    }
+  };
+
   Game.player.melee.transform = {
+    visible: true,
+    position: {x: 100, y: 100, z: 2},
+    rotation: {x: 0, y: 0, z: 0},
+    scale: {x: 4, y: 4},
+    offset: {x: 8, y: 364, r: 0},
+    width: 24,
+    height: 10
+  };
+  Game.player.bomb.transform = {
     visible: true,
     position: {x: 100, y: 100, z: 2},
     rotation: {x: 0, y: 0, z: 0},
@@ -180,8 +203,6 @@
       height: 8
     }
   }
-
-  Game.graphics.draw_list[2].push(melee_col_obj.transform);
 
 })();
 
