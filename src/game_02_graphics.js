@@ -45,6 +45,20 @@
         return true;
       });
     });
+
+    // BOMB:
+    (function(B){
+      if (B.active){
+        ctx.fillStyle = 'rgba(95,232,232,0.7)';
+        ctx.beginPath();
+        ctx.arc(B.transform.position.x-Game.graphics.camera.x, B.transform.position.y-Game.graphics.camera.y, B.col-(B.duration_left/B.duration)*B.col, 0, Math.PI*2, true); 
+        ctx.closePath();
+        ctx.fill();
+      }
+    })(Game.player.bomb);
+    
+
+
     //UI
     //HP:
     ctx.save();
@@ -70,6 +84,12 @@
     }
     ctx.strokeRect(300,10,200,20);
 
+    //BOMB:
+    ctx.fillStyle = '#5FE8E8';
+    ctx.fillRect(50,40, 200 - Game.player.bomb.cooldown_left/Game.player.bomb.cooldown*200,20);
+    ctx.fillStyle = 'rgba(0,0,0,0.5)';
+    ctx.fillText("MANA BOMB", 85, 57);
+    ctx.strokeRect(50,40,200,20);
     ctx.restore();
 
   };
