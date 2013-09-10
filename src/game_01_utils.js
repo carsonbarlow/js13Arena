@@ -38,11 +38,8 @@ Game.utils.count_down = function(obj, prop, delta){
 };
 Game.utils.damage = function(obj, amount){
   obj.hp -= amount;
-  if (obj.hp > obj.max_hp){obj.hp = obj.max_hp;}
-  else if (obj.hp <= 0){
-    obj.hp = 0;
-    obj.die();
-  }
+  if (obj.hp <= 0){obj.hp = 0;}
+  else if (obj.hp > obj.max_hp){obj.hp = obj.max_hp;}
 }
 Game.utils.clone = function (obj) {
   if (null == obj || "object" != typeof obj) return obj;

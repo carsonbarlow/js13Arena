@@ -30,6 +30,7 @@
   var enemies_to_spawn = 0;
   Game.spawn_enemy = function(stats, x_pos, y_pos){
     var new_enemy = Game.utils.clone(stats);
+    new_enemy.active = true;
     new_enemy.transform = {
       visible: true,
       position: {x: x_pos, y: y_pos, z: 1},
@@ -47,6 +48,8 @@
     new_enemy.chasing = false;
     new_enemy.attack_wind_up = 400;
     new_enemy.attack_wind_up_left = 400;
+    new_enemy.die = Game.enemy_functions.die;
+    new_enemy.melee_hit = false;
     Game.enemies.push(new_enemy);
     Game.graphics.draw_list[1].push(new_enemy.transform);
   };
@@ -131,7 +134,7 @@
     });
   }
 
-  var portal_count = 3;
+  var portal_count = 5;
   Game.bm.set_portals = function(count){
     portal_queue = [];
     for (var i = 0; i < portal_transforms.length; i++){

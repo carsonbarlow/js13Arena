@@ -15,7 +15,7 @@
 
       for (var i = 0; i < Game.enemies.length; i++){
         if (Game.utils.collision(p,Game.enemies[i])){
-          console.log('HIT!');
+          Game.enemy_functions.do_damage.call(Game.enemies[i],p.damage);
           active = false;
           break;
         }

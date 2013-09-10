@@ -119,9 +119,15 @@
       melee_col_obj.transform.position.x += melee_offset_x * M.reach;
       melee_col_obj.transform.position.y += melee_offset_y * M.reach;
       Game.enemies.map(function(E){
-        if(Game.utils.collision(E,melee_col_obj)){Game.enemy_functions.do_damage.call(E,M.damage);}
+        if(Game.utils.collision(E,melee_col_obj)){
+          if (!E.melee_hit){
+            Game.enemy_functions.do_damage.call(E,M.damage);
+            E.melee_hit = true;
+          }
+        }
       });      
     }else{
+      Game.enemies.map(function(E){E.melee_hit = false;});
       M.active = false;
       M.transform.visible = false;
     }
@@ -132,7 +138,7 @@
         P.ranged.ammo--;
         Game.projectiles.push({
           source: P,
-          power: P.ranged.damage,
+          damage: P.ranged.damage,
           type: 'vector',
           speed: P.ranged.speed,
           vol: Game.utils.normalize(P.transform.position.x-Game.graphics.camera.x, P.transform.position.y-Game.graphics.camera.y, Game.input.mouse.x, Game.input.mouse.y),
