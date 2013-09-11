@@ -8,6 +8,7 @@
     {type: 'big_n_heavy', hp: 6.0, speed: 70.0, attack: 'melee_1', damage: 1.0, movement: 'wonder', graphic: [66,159,32,32,0]}
   ];
 
+  Game.bm.wave_time = Game.bm.wave_time_left = 3000;
   var spawn_cooldown = 750;
   Game.bm.spawn_cooldown_left = 0;
   Game.update_battle_master = function(B,delta){
@@ -22,6 +23,19 @@
             enemies_to_spawn--;
           }
         }
+      }
+    }else if (!B.enemy_count){
+      //add to luck
+      B.luck += Math.round(B.wave_time_left/B.wave_time*100);
+      if (B.luck > 100){B.luck = 100;}
+      B.do_wave();
+    }else{
+      Game.utils.count_down(B, 'wave_time_left', delta);
+      if (!B.wave_time_left){
+        //adjust luck
+        B.luck -= Math.round(B.enemy_count/B.enemy_count_total*100);
+        if (B.luck < 0){B.luck = 0;}
+        B.do_wave();
       }
     }
   };
@@ -58,7 +72,9 @@
   var type_population = [10, 4, 2, 1];
   var wave_base = 20;
   var bm = Game.bm;
-  bm.wave = 1;
+  bm.wave = 0;
+  bm.enemy_count = 0;
+  bm.enemy_count_total = 0;
   var pts;
   Game.bm.craft_enemy = function(obj, points){
     var enemy = Game.utils.clone(obj);
@@ -74,13 +90,14 @@
   };
   var wave_e_types = [];
   var wave_e_count = [];
-  Game.bm.do_wave = function(pts){
+  Game.bm.do_wave = function(){
+    bm.wave++;
     wave_base *= 1.08;
     // figure in luck meter...
-
+    var wave_val = wave_base * (1+(((100-Game.bm.luck)/100)*4));
     // distribute points...
     var e_ratio = [];
-    // var e_count = [];
+    // bm.enemy_count_total = bm.enemy_count;
     enemies_to_spawn = 0;
     var e_ratio_total = 0;
     type_distribution.map(function(item){
@@ -89,20 +106,18 @@
       e_ratio.push(et);
     });
     for(var i = 0; i < e_ratio.length; i++){
-      e_ratio[i] = (e_ratio[i] / e_ratio_total) * wave_base;
+      e_ratio[i] = (e_ratio[i] / e_ratio_total) * wave_val;
       // number of mobs = points alloted to type / total points for round / type_distribution * type_population
-      wave_e_count[i] = Math.round(e_ratio[i]/wave_base/type_distribution[i]*type_population[i]);
+      wave_e_count[i] = Math.round(e_ratio[i]/wave_val/type_distribution[i]*type_population[i]);
       wave_e_types[i] = Game.bm.craft_enemy(Game.enemy_stats[i],e_ratio[i]/wave_e_count[i]);
       enemies_to_spawn += wave_e_count[i];
       for (var j = 0; j < wave_e_count[i]; j++){
         portal_queue[Math.floor(Math.random()*portal_queue.length)].push(i);
       }
-      // var crafted_enemy = Game.bm.craft_enemy(Game.enemy_stats[i],e_ratio[i]/e_count[i]);
-      // while (e_count[i]--){
-      //   Game.spawn_enemy(crafted_enemy, 400,100);
-      // }
-    };
-  }
+    }
+    bm.enemy_count_total = bm.enemy_count += enemies_to_spawn;
+    bm.wave_time_left = bm.wave_time = bm.enemy_count_total * 1250;
+  };
 
   var portal_layout = [];
   portal_layout[3] = [1,2];
@@ -161,7 +176,10 @@
     }
   };
 
-  Game.bm.set_portals(portal_count)
+  Game.bm.luck = 50;
+
+
+  Game.bm.set_portals(portal_count);
   Game.bm.do_wave();
 })();
 

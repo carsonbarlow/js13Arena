@@ -90,7 +90,34 @@
     ctx.fillStyle = 'rgba(0,0,0,0.5)';
     ctx.fillText("MANA BOMB", 85, 57);
     ctx.strokeRect(50,40,200,20);
+
+    //LUCK
+    ctx.fillStyle = '#7EF280';
+    ctx.fillRect(570, 210-(Game.bm.luck*2), 20, Game.bm.luck*2);
+    ctx.fillStyle = 'rgba(0,0,0,0.5)';
+    ctx.fillText("L", 573, 40);
+    ctx.fillText("U", 573, 80);
+    ctx.fillText("C", 573, 120);
+    ctx.fillText("K", 573, 160);
+    ctx.strokeRect(570,10,20,200);
+
+    //WAVE
+    ctx.fillStyle = '#BEF27E';
+    ctx.fillRect(600, 210-(Game.bm.wave_time_left/Game.bm.wave_time*200), 20, Game.bm.wave_time_left/Game.bm.wave_time*200);
+    ctx.fillStyle = 'rgba(0,0,0,0.5)';
+    ctx.fillText("W", 600, 40);
+    ctx.fillText("A", 603, 70);
+    ctx.fillText("V", 603, 100);
+    ctx.fillText("E", 603, 130);
+    var wave = Game.bm.wave.toString()
+    for (var i = 0; i < wave.length; i++){
+      ctx.fillText(wave[i], 605, 165+(20*i));
+    }
+    ctx.strokeRect(600,10,20,200);
+
+
     ctx.restore();
+
 
   };
 
