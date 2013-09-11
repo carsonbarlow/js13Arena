@@ -19,7 +19,7 @@
         for (var i = 0; i < portal_queue.length; i++){
           if (portal_queue[i].length){
             var type_index = portal_queue[i].splice(Math.floor(Math.random()*portal_queue[i].length),1);
-            Game.spawn_enemy(Game.enemy_stats[type_index],portal_transforms[i].position.x,portal_transforms[i].position.y);
+            Game.spawn_enemy(wave_e_types[type_index],portal_transforms[i].position.x,portal_transforms[i].position.y);
             enemies_to_spawn--;
           }
         }
@@ -86,6 +86,7 @@
         enemy.damage += Math.round(points * 0.34 / 3);
         break;
     }
+    enemy.points = points;
     return enemy;
   };
   var wave_e_types = [];
@@ -109,7 +110,7 @@
       e_ratio[i] = (e_ratio[i] / e_ratio_total) * wave_val;
       // number of mobs = points alloted to type / total points for round / type_distribution * type_population
       wave_e_count[i] = Math.round(e_ratio[i]/wave_val/type_distribution[i]*type_population[i]);
-      wave_e_types[i] = Game.bm.craft_enemy(Game.enemy_stats[i],e_ratio[i]/wave_e_count[i]);
+      if (wave_e_count[i]){wave_e_types[i] = Game.bm.craft_enemy(Game.enemy_stats[i],e_ratio[i]/wave_e_count[i]);}
       enemies_to_spawn += wave_e_count[i];
       for (var j = 0; j < wave_e_count[i]; j++){
         portal_queue[Math.floor(Math.random()*portal_queue.length)].push(i);
@@ -176,7 +177,7 @@
     }
   };
 
-  Game.bm.luck = 50;
+  Game.bm.luck = 100;
 
 
   Game.bm.set_portals(portal_count);

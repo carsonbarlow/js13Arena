@@ -50,6 +50,7 @@
 
 
     Game.enemy_functions.die = function(){
+      Game.player.add_xp(Game.player.exp,this.points);
       Game.bm.enemy_count--;
       this.active = false;
       this.transform.visible = false;

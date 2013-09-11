@@ -1,14 +1,12 @@
 (function(){
 
   Game.player = {
-    luck: 100,
     hp: 10,
     max_hp: 10,
     health_regen: 1,
     health_regen_time: 5000,
     speed: 200,
     col: 12,
-    selected_attack: 'ranged',
     melee: {
       active: false,
       damage: 4,
@@ -16,7 +14,8 @@
       cooldown: 500,
       cooldown_left: 0,
       duration: 200,
-      duration_left: 0
+      duration_left: 0,
+      movement: 0
     },
     ranged: {
       damage: 3,
@@ -26,7 +25,8 @@
       ammo: 6,
       max_ammo: 6,
       reload_time: 5000,
-      reload_time_left: 0
+      reload_time_left: 0,
+      movement: 0
     },
     bomb: {
       active: false,
@@ -90,8 +90,6 @@
         P.health_regen_time += 5000/P.health_regen;
       }
     }
-
-    
   }
 
 
@@ -209,6 +207,93 @@
       height: 8
     }
   }
+
+  Game.player.exp = {};
+  var pe = Game.player.exp;
+  pe.total = 0;
+  pe.selected = 'bomb';
+  pe.melee = {
+    xp: 0,
+    next: 10,
+    level: 0,
+    perk_levels: [30,60,100],
+    perk_names: ['sword_2','sword_3','swipe']
+  };
+  pe.ranged = {
+    xp: 0,
+    next: 10,
+    level: 0,
+    perk_levels: [20,40,60,80,100],
+    // perk_levels: [1,2,3,4],
+    perk_names: ['clip_x2','reload_half','clip_x4','range_x2','spread_shot']
+  };
+  pe.bomb = {
+    xp: 0,
+    next: 10,
+    level: 0,
+    perk_levels: [20,40,60,80,100],
+    // perk_levels: [1,2,3,4],
+    perk_names: ['radius_150','cooldown_75','radius_200','cooldown_40','panic_bomb']
+  };
+
+  var level_xp_base = 10;
+  Game.player.add_xp = function(exp,amount){
+    exp.total += amount;
+    if (exp[exp.selected].level < 100){
+      exp[exp.selected].xp += amount;
+      if (exp[exp.selected].xp >= exp[exp.selected].next){
+        exp[exp.selected].level++;
+        exp['level_'+exp.selected]();
+        for (var i = 0; i < exp[exp.selected].perk_levels.length; i++){
+          if (exp[exp.selected].perk_levels[i] == exp[exp.selected].level){
+            exp['perk_'+exp[exp.selected].perk_names[i]]();
+          }
+        }
+        Game.player.hp = Game.player.max_hp;
+        Game.player.ranged.reload_time_left = 0;
+        Game.player.ranged.ammo = Game.player.ranged.max_ammo;
+        Game.player.bomb.cooldown_left = 0;
+        exp[exp.selected].next = (level_xp_base * (Math.pow(1.05,exp[exp.selected].level))+(5*exp[exp.selected].level));
+      }
+    }
+  };
+
+  (function(P){
+    P.exp.level_melee = function(){
+      P.melee.damage += 1;
+      P.melee.movement += 1;
+      P.max_hp += 2;
+    };
+    P.exp.level_ranged = function(){
+      P.ranged.damage += 0.75;
+      P.ranged.movement += 1;
+      P.ranged.cooldown -= 2.5;
+      P.speed += 1.5;
+    };
+    P.exp.level_bomb = function(){
+      P.bomb.damage += 4;
+      P.health_regen += 0.5;
+    };
+
+    P.exp.perk_sword_2 = function(){};
+    P.exp.perk_sword_3 = function(){};
+    P.exp.perk_swipe = function(){};
+
+    P.exp.perk_clip_x2 = function(){P.ranged.max_ammo *= 2;};
+    P.exp.perk_reload_half = function(){P.ranged.reload_time /= 2;};
+    P.exp.perk_clip_x4 = function(){P.ranged.max_ammo *= 2;};
+    P.exp.perk_range_x2 = function(){P.ranged.range *= 2};
+    P.exp.perk_spread_shot = function(){};
+
+    P.exp.perk_radius_150 = function(){P.bomb.col = 150;};
+    P.exp.perk_cooldown_75 = function(){P.bomb.cooldown = 10000 * 0.75;};
+    P.exp.perk_radius_200 = function(){P.bomb.col = 200;};
+    P.exp.perk_cooldown_40 = function(){P.bomb.cooldown = 10000 * 0.4};
+    P.exp.perk_panic_bomb = function(){};
+
+  })(Game.player);
+  
+
 
 })();
 
