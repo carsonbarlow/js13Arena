@@ -2,9 +2,9 @@
   Game.bm = {};
 
   Game.enemy_stats = [
-    {type: 'lame_brain', hp: 6.0, speed: 70.0, attack: 'melee_1', damage: 1.0, movement: 'wonder', graphic: [4,4,28,22,0]},
-    {type: 'stand_n_shoot', hp: 6.0, speed: 70.0, attack: 'melee_1', damage: 1.0, movement: 'wonder', graphic: [4,136,32,18,0]},
-    {type: 'back_stabber', hp: 6.0, speed: 70.0, attack: 'melee_1', damage: 1.0, movement: 'wonder', graphic: [6,62,20,18,0]},
+    {type: 'lame_brain', hp: 6.0, speed: 70.0, attack: 'melee_1', damage: 1.0, movement: 'wonder', graphic: [4,4,28,22,1]},
+    {type: 'stand_n_shoot', hp: 6.0, speed: 90.0, attack: 'melee_1', damage: 1.0, movement: 'wonder', graphic: [4,136,32,18,1]},
+    {type: 'back_stabber', hp: 6.0, speed: 70.0, attack: 'melee_1', damage: 1.0, movement: 'wonder', graphic: [6,62,20,18,1]},
     {type: 'big_n_heavy', hp: 6.0, speed: 70.0, attack: 'melee_1', damage: 1.0, movement: 'wonder', graphic: [66,159,32,32,0]}
   ];
 
@@ -56,14 +56,32 @@
     };
     new_enemy.max_hp = new_enemy.hp;
     new_enemy.vol = [0,0];
-    new_enemy.col = 14;
-    new_enemy.wonder = 0;
-    new_enemy.standing = 500;
     new_enemy.chasing = false;
+    switch (new_enemy.type){
+      case 'lame_brain':
+        new_enemy.col = 14;
+        new_enemy.wonder = 0;
+        new_enemy.standing = 500;
+      break;
+      case 'stand_n_shoot':
+        new_enemy.col= 14;
+        new_enemy.spread_out = 200;
+        new_enemy.cooldown = 1500;
+        new_enemy.cooldown_left = 0;
+        new_enemy.range_speed = 200;
+      break;
+    }
+    
     new_enemy.attack_wind_up = 400;
     new_enemy.attack_wind_up_left = 400;
     new_enemy.die = Game.enemy_functions.die;
     new_enemy.melee_hit = false;
+
+
+
+
+
+
     Game.enemies.push(new_enemy);
     Game.graphics.draw_list[1].push(new_enemy.transform);
   };

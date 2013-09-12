@@ -2,60 +2,139 @@
 
   Game.enemies = [];
 
+  Game.enemy_functions = {}
   Game.update_enemies = function (delta){
     Game.enemies = Game.enemies.filter(function(mob){
-      if(!mob.active){return false;}
-      mob.chasing = (Game.utils.proximity(mob, Game.player) < 200);
-      if (mob.chasing){
-        if (Game.utils.proximity(mob,Game.player) < 35){
-          mob.vol = [0, 0];
-          Game.utils.count_down(mob,'attack_wind_up_left',delta);
-          if (!mob.attack_wind_up_left){
-            Game.utils.damage(Game.player,mob.damage);
-            mob.attack_wind_up_left = mob.attack_wind_up;
-          }
-        } else {
-          mob.vol = Game.utils.normalize(mob.transform.position.x, mob.transform.position.y, Game.player.transform.position.x, Game.player.transform.position.y);
-        }
-      }else if (mob.standing){
-        Game.utils.count_down(mob,'standing',delta);
-        if (!mob.standing){
-          mob.vol = Game.utils.randomize_direction();
-          mob.wonder = Math.random()*275+75;
-        }
-      }else if (mob.wonder){
-        mob.wonder -= mob.speed * delta;
-        if (mob.wonder <= 0){
-          mob.wonder = 0;
-          mob.vol = [0,0];
-          mob.standing = Math.random()*250+500;
-        }
-      }
-      mob.transform.position.x += (mob.vol[0]*mob.speed*delta);
-      mob.transform.position.y += (mob.vol[1]*mob.speed*delta);
-      if (mob.transform.position.x < 40 + mob.col){mob.transform.position.x = 40 + mob.col; mob.vol[0] *= -1;}
-      if (mob.transform.position.x > 1240 - mob.col){mob.transform.position.x = 1240 - mob.col; mob.vol[0] *= -1;}
-      if (mob.transform.position.y < 40 + mob.col){mob.transform.position.y = 40 + mob.col; mob.vol[1] *= -1;}
-      if (mob.transform.position.y > 920 - mob.col){mob.transform.position.y = 920 - mob.col; mob.vol[1] *= -1;}
-      return true;
+      return Game.enemy_functions['update_'+mob.type](mob,Game.player,delta);
     });
-
-    Game.enemy_functions = {}
-    Game.enemy_functions.do_damage = function(amount){
-      Game.utils.damage(this, amount);
-      if (!this.hp){
-        Game.enemy_functions.die.call(this);
+  };
+  Game.enemy_functions.update_lame_brain = function(mob,P,delta){
+    if(!mob.active){return false;}
+    mob.chasing = (Game.utils.proximity(mob, P) < 200);
+    if (mob.chasing){
+      mob.transform.rotation.z = Game.utils.point_to(mob.transform.position.x, mob.transform.position.y, P.transform.position.x, P.transform.position.y);
+      if (Game.utils.proximity(mob,P) < 35){
+        mob.vol = [0, 0];
+        Game.utils.count_down(mob,'attack_wind_up_left',delta);
+        if (!mob.attack_wind_up_left){
+          Game.utils.damage(P,mob.damage);
+          mob.attack_wind_up_left = mob.attack_wind_up;
+        }
+      } else {
+        mob.vol = Game.utils.normalize(mob.transform.position.x, mob.transform.position.y, P.transform.position.x, P.transform.position.y);
+      }
+    }else if (mob.standing){
+      Game.utils.count_down(mob,'standing',delta);
+      if (!mob.standing){
+        mob.vol = Game.utils.randomize_direction();
+        Game.enemy_functions.point_walk(mob);
+        mob.wonder = Math.random()*275+75;
+      }
+    }else if (mob.wonder){
+      mob.wonder -= mob.speed * delta;
+      if (mob.wonder <= 0){
+        mob.wonder = 0;
+        mob.vol = [0,0];
+        mob.standing = Math.random()*250+500;
       }
     }
-
-
-    Game.enemy_functions.die = function(){
-      Game.player.add_xp(Game.player.exp,this.points);
-      Game.bm.enemy_count--;
-      this.active = false;
-      this.transform.visible = false;
-    }
-
+    Game.enemy_functions.move(mob,delta);
+    return true;
   };
+
+
+  Game.enemy_functions.update_stand_n_shoot = function(mob,P,delta){
+    if(!mob.active){return false;}
+    if (mob.spread_out){
+      if (mob.vol[0] || mob.vol[1]){
+        mob.spread_out -= mob.speed * delta;
+        if (mob.spread_out < 0){mob.spread_out = 0;}
+      }else{
+        mob.vol = Game.utils.randomize_direction();
+        Game.enemy_functions.point_walk(mob);
+      }
+    }else{
+      mob.vol = Game.utils.normalize(mob.transform.position.x, mob.transform.position.y, P.transform.position.x, P.transform.position.y);
+      Game.enemy_functions.point_walk(mob);
+      if (Game.utils.proximity(mob, P) < 250){
+        mob.vol = [0,0]
+        Game.utils.count_down(mob, 'cooldown_left', delta);
+        if (!mob.cooldown_left){
+          mob.cooldown_left = mob.cooldown;
+          Game.projectiles.push({
+          source: mob,
+          damage: mob.damage,
+          type: 'vector',
+          speed: mob.range_speed,
+          vol: Game.utils.normalize(mob.transform.position.x, mob.transform.position.y, P.transform.position.x, P.transform.position.y),
+          range: 700,
+          transform: {
+            visible: true,
+            position: {x: mob.transform.position.x, y: mob.transform.position.y, z: 2},
+            rotation: {x: 0, y: 0, z: 0.5},
+            scale: {x: 4, y: 4},
+            offset: {x: 13, y: 286, r: 0},
+            width: 12,
+            height: 12
+          },
+          col: 10
+        });
+        Game.graphics.draw_list[2].push(Game.projectiles[Game.projectiles.length-1].transform);
+        }
+      }
+    }
+    Game.enemy_functions.move(mob,delta);
+    return true;
+  };
+
+  Game.enemy_functions.update_back_stabber = function(mob,P){
+    if(!mob.active){return false;}
+    return true;
+  };
+
+  Game.enemy_functions.update_big_n_heavy = function(mob,P){
+    if(!mob.active){return false;}
+    return true;
+  };
+
+  Game.enemy_functions.move = function(mob,delta){
+    mob.transform.position.x += (mob.vol[0]*mob.speed*delta);
+    mob.transform.position.y += (mob.vol[1]*mob.speed*delta);
+    if (mob.transform.position.x < 40 + mob.col){
+      mob.transform.position.x = 40 + mob.col; mob.vol[0] *= -1;
+      Game.enemy_functions.point_walk(mob);
+    }
+    if (mob.transform.position.x > 1240 - mob.col){
+      mob.transform.position.x = 1240 - mob.col; mob.vol[0] *= -1;
+      Game.enemy_functions.point_walk(mob);
+    }
+    if (mob.transform.position.y < 40 + mob.col){
+      mob.transform.position.y = 40 + mob.col; mob.vol[1] *= -1;
+      Game.enemy_functions.point_walk(mob);
+    }
+    if (mob.transform.position.y > 920 - mob.col){
+      mob.transform.position.y = 920 - mob.col; mob.vol[1] *= -1;
+      Game.enemy_functions.point_walk(mob);
+    }
+  };
+
+  Game.enemy_functions.point_walk = function(mob){
+    mob.transform.rotation.z = Game.utils.point_to(mob.transform.position.x,mob.transform.position.y,mob.transform.position.x+mob.vol[0],mob.transform.position.y+mob.vol[1]);
+  };
+
+  Game.enemy_functions.do_damage = function(amount){
+    Game.utils.damage(this, amount);
+    if (!this.hp){
+      Game.enemy_functions.die.call(this);
+    }
+  }
+
+  Game.enemy_functions.die = function(){
+    Game.player.add_xp(Game.player.exp,this.points);
+    Game.bm.enemy_count--;
+    this.active = false;
+    this.transform.visible = false;
+  };
+
 
 })();

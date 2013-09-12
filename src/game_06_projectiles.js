@@ -12,12 +12,18 @@
           p.range -= p.speed*delta;
         break;
       }
-
-      for (var i = 0; i < Game.enemies.length; i++){
-        if (Game.utils.collision(p,Game.enemies[i])){
-          Game.enemy_functions.do_damage.call(Game.enemies[i],p.damage);
+      if (p.source == Game.player){
+        for (var i = 0; i < Game.enemies.length; i++){
+          if (Game.utils.collision(p,Game.enemies[i])){
+            Game.enemy_functions.do_damage.call(Game.enemies[i],p.damage);
+            active = false;
+            break;
+          }
+        }
+      }else{
+        if (Game.utils.collision(p,Game.player)){
+          Game.utils.damage(Game.player,p.damage);
           active = false;
-          break;
         }
       }
       if (p.range < 0){active = false;}
