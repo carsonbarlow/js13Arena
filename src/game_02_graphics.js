@@ -13,7 +13,7 @@
   // Game.graphics.bg_canvas = document.createElement('canvas');
   // Game.graphics.bg_canvas.width = Game.graphics.canvas.width;
 
-  var image_loaded = false; // <-- this will be refactored
+  var image_loaded = false; 
   Game.graphics.draw = function(ctx){
     if (!image_loaded){if (Game.graphics.image.width){image_loaded = true;}}
     // Game.graphics.canvas.width = Game.graphics.canvas.width;

@@ -87,13 +87,51 @@
     return true;
   };
 
-  Game.enemy_functions.update_back_stabber = function(mob,P){
-    if(!mob.active){return false;}
-    return true;
-  };
+  (function(){
 
+    var two_pi = Math.PI*2;
+    var p_z, m_z, d, r;
+    Game.enemy_functions.update_back_stabber = function(mob,P){
+      if(!mob.active){return false;}
+      if (mob.spread_out){
+        if (mob.vol[0] || mob.vol[1]){
+          mob.spread_out -= mob.speed * delta;
+          if (mob.spread_out < 0){mob.spread_out = 0;}
+        }else{
+          mob.vol = Game.utils.randomize_direction();
+          Game.enemy_functions.point_walk(mob);
+        }
+      }else{
+        Game.utils.count_down(mob,'cooldown_left',delta);
+        // if the player's back is turned.
+        mob.transform.rotation.z = Game.utils.point_to(mob.transform.position.x, mob.transform.position.y, P.transform.position.x, P.transform.position.y);
+        p_z = (P.transform.rotation.z + two_pi)%two_pi;
+        m_z = (mob.transform.rotation.z + two_pi)%two_pi;
+        d = Math.abs(p_z - m_z) % two_pi;
+        r = (d > Math.PI)? two_pi - d : d;
+        if (r <  (Math.PI/2)){
+          if (Game.utils.proximity(mob,P) < 35){
+            mob.vol = [0, 0];
+            if (!mob.cooldown_left){Game.utils.count_down(mob,'attack_wind_up_left',delta);}
+            if (!mob.attack_wind_up_left){
+              Game.utils.damage(P,mob.damage);
+              mob.attack_wind_up_left = mob.attack_wind_up;
+              mob.cooldown_left = mob.cooldown;
+            }
+          }else{
+            mob.vol = Game.utils.normalize(mob.transform.position.x, mob.transform.position.y, P.transform.position.x, P.transform.position.y);
+          }
+        }else{
+          mob.vol = [0,0];
+        }
+      }
+      Game.enemy_functions.move(mob,delta);
+      return true;
+    };
+  })();
   Game.enemy_functions.update_big_n_heavy = function(mob,P){
     if(!mob.active){return false;}
+    Game.enemy_functions.move(mob,delta);
     return true;
   };
 

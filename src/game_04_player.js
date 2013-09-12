@@ -58,6 +58,7 @@
     if (Game.input.keyboard.w){P.transform.position.y -= (P.speed * delta);}
     if (Game.input.keyboard.s){P.transform.position.y += (P.speed * delta);}
     P.transform.rotation.z = Game.utils.point_to(P.transform.position.x-Game.graphics.camera.x , P.transform.position.y-Game.graphics.camera.y, Game.input.mouse.x, Game.input.mouse.y);
+    // console.log(P.transform.rotation.z);
     if (P.transform.position.x < 40 + P.col){P.transform.position.x = 40 + P.col;}
     if (P.transform.position.x > 1240 - P.col){P.transform.position.x = 1240 - P.col;}
     if (P.transform.position.y < 40 + P.col){P.transform.position.y = 40 + P.col;}
