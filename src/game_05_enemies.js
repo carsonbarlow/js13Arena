@@ -73,7 +73,7 @@
             position: {x: mob.transform.position.x, y: mob.transform.position.y, z: 2},
             rotation: {x: 0, y: 0, z: 0.5},
             scale: {x: 4, y: 4},
-            offset: {x: 13, y: 286, r: 0},
+            offset: {x: 312, y: 22, r: 0},
             width: 12,
             height: 12
           },
@@ -153,6 +153,7 @@
       }
     }
     Game.enemy_functions.move(mob,delta);
+    Game.animator.mob_update(mob,delta);
     return true;
   };
 

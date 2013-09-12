@@ -49,3 +49,4 @@ Game.utils.clone = function (obj) {
   }
   return copy;
 };
+

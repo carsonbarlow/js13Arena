@@ -16,16 +16,15 @@
   var image_loaded = false; 
   Game.graphics.draw = function(ctx){
     if (!image_loaded){if (Game.graphics.image.width){image_loaded = true;}}
-    // Game.graphics.canvas.width = Game.graphics.canvas.width;
     ctx.clearRect(0, 0, Game.graphics.canvas.width, Game.graphics.canvas.height);
 
     //BACKGROUND
     for (var by = 0; by < 24; by++){
       for (var bx = 0; bx < 32; bx++){
         if (by == 0 || by == 23 || bx == 0 || bx == 31){
-          ctx.drawImage(Game.graphics.image,4,389,56,56,bx*40-Game.graphics.camera.x,by*40-Game.graphics.camera.y,40,40);
+          ctx.drawImage(Game.graphics.image,0,93,56,56,bx*40-Game.graphics.camera.x,by*40-Game.graphics.camera.y,40,40);
         }else{
-          ctx.drawImage(Game.graphics.image,4,244,25,25,bx*40-Game.graphics.camera.x,by*40-Game.graphics.camera.y,40,40);
+          ctx.drawImage(Game.graphics.image,420,2,25,25,bx*40-Game.graphics.camera.x,by*40-Game.graphics.camera.y,40,40);
         }
       }
     }

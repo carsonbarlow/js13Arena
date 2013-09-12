@@ -2,10 +2,10 @@
   Game.bm = {};
 
   Game.enemy_stats = [
-    {type: 'lame_brain', hp: 6.0, speed: 70.0, damage: 1.0, graphic: [4,4,28,22,1]},
-    {type: 'stand_n_shoot', hp: 6.0, speed: 90.0, damage: 1.0, graphic: [4,136,32,18,1]},
-    {type: 'back_stabber', hp: 6.0, speed: 120.0, damage: 2.0, graphic: [6,62,20,18,1]},
-    {type: 'big_n_heavy', hp: 12.0, speed: 45.0, damage: 3.0, graphic: [66,159,32,32,0]}
+    {type: 'lame_brain', hp: 6.0, speed: 70.0, damage: 1.0, graphic: [0,73,24,20,0]},
+    {type: 'stand_n_shoot', hp: 6.0, speed: 90.0, damage: 1.0, graphic: [28,0,28,22,1]},
+    {type: 'back_stabber', hp: 6.0, speed: 120.0, damage: 2.0, graphic: [0,22,20,18,1]},
+    {type: 'big_n_heavy', hp: 12.0, speed: 45.0, damage: 3.0, graphic: [64,40,32,32,0]}
   ];
 
   Game.bm.wave_time = Game.bm.wave_time_left = 3000;
@@ -57,6 +57,7 @@
     new_enemy.max_hp = new_enemy.hp;
     new_enemy.vol = [0,0];
     new_enemy.chasing = false;
+    // new_enemy.animator = Game.animator.setup_animation(new_enemy);
     switch (new_enemy.type){
       case 'lame_brain':
         new_enemy.col = 14;
@@ -87,6 +88,7 @@
         new_enemy.attack_wind_up_left = 400;
         new_enemy.cooldown = 600;
         new_enemy.cooldown_left = 600;
+        new_enemy.animator = Game.animator.setup_animation(new_enemy);
       break;
     }
     
@@ -173,9 +175,9 @@
       position: {x: 100, y: 100, z: 0},
       rotation: {x: 0, y: 0, z: 0},
       scale: {x: 1, y: 1},
-      offset: {x: 3, y: 194, r: 0},
-      width: 40,
-      height: 40
+      offset: {x: 57, y: 110, r: 0},
+      width: 38,
+      height: 38
     });
   }
 

@@ -42,9 +42,9 @@
       position: {x: 100, y: 100, z: 1},
       rotation: {x: 0, y: 0, z: 0.5},
       scale: {x: 4, y: 4},
-      offset: {x: 0, y: 105, r: 1},
+      offset: {x: 322, y: 111, r: 1},
       width: 28,
-      height: 21
+      height: 28
     }
   }
   Game.graphics.draw_list[1].push(Game.player.transform);
@@ -113,8 +113,8 @@
       M.transform.position.y = melee_col_obj.transform.position.y = P.transform.position.y;
       melee_offset_x = Math.cos(M.transform.rotation.z);
       melee_offset_y = Math.sin(M.transform.rotation.z);
-      M.transform.position.x += melee_offset_x * M.transform.width;
-      M.transform.position.y += melee_offset_y * M.transform.width;
+      M.transform.position.x += melee_offset_x * M.transform.width/1.35;
+      M.transform.position.y += melee_offset_y * M.transform.width/1.35;
       // check collision
       melee_col_obj.transform.position.x += melee_offset_x * M.reach;
       melee_col_obj.transform.position.y += melee_offset_y * M.reach;
@@ -148,9 +148,9 @@
             position: {x: P.transform.position.x, y: P.transform.position.y, z: 2},
             rotation: {x: 0, y: 0, z: 0.5},
             scale: {x: 4, y: 4},
-            offset: {x: 14, y: 316, r: 1},
+            offset: {x: 300, y: 22, r: 1},
             width: 12,
-            height: 13
+            height: 12
           },
           col: 6
         });
@@ -184,9 +184,9 @@
     position: {x: 100, y: 100, z: 2},
     rotation: {x: 0, y: 0, z: 0},
     scale: {x: 4, y: 4},
-    offset: {x: 8, y: 364, r: 0},
-    width: 24,
-    height: 10
+    offset: {x: 188, y: 104, r: 0},
+    width: 31,
+    height: 15
   };
   Game.player.bomb.transform = {
     visible: true,
@@ -204,11 +204,12 @@
       position: {x: 100, y: 100, z: 2},
       rotation: {x: 0, y: 0, z: 0},
       scale: {x: 4, y: 4},
-      offset: {x: 15, y: 278, r: 0},
+      offset: {x: 292, y: 46, r: 0},
       width: 8,
       height: 8
     }
   }
+  // Game.graphics.draw_list[2].push(melee_col_obj.transform);
 
   Game.player.exp = {};
   var pe = Game.player.exp;
