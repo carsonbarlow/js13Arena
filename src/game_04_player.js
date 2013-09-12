@@ -69,6 +69,7 @@
     Game.utils.count_down(P.ranged,'cooldown_left',delta);
     Game.utils.count_down(P.bomb,'cooldown_left',delta);
     if (!P.ranged.reload_time_left){
+      if (Game.input.keyboard.r && P.ranged.ammo < P.ranged.max_ammo){P.ranged.ammo = P.ranged.max_ammo; P.ranged.reload_time_left = P.ranged.reload_time;}
       if (Game.input.mouse.right){ P.do_ranged(P);}  
     }else{
       P.ranged.reload_time_left -= delta * 1000;

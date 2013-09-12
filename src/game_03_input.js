@@ -4,13 +4,14 @@
   Game.input.keyboard.s = false;
   Game.input.keyboard.d = false;
   Game.input.keyboard.w = false;
+  Game.input.keyboard.r = false;
   Game.input.keyboard.space = false;
   Game.input.mouse = {};
   Game.input.mouse.x = 0;
   Game.input.mouse.y = 0;
   Game.input.mouse.left = false;
   Game.input.mouse.right = false;
-  Game.input.keyboard.id_to_key = {'U+0041':'a', 'U+0053':'s', 'U+0044':'d', 'U+0057':'w', 'U+0020':'space'};
+  Game.input.keyboard.id_to_key = {'U+0041':'a', 'U+0053':'s', 'U+0044':'d', 'U+0057':'w', 'U+0020':'space', 'U+0052':'r'};
 
   Game.graphics.canvas.addEventListener('mousedown',function(event){
     
@@ -25,9 +26,6 @@
       break;
       case 2:
         Game.input.mouse.right = true;
-      break;
-      case 3:
-
       break;
     }
     event.preventDefault();
@@ -44,9 +42,6 @@
       break;
       case 2:
         Game.input.mouse.right = false;
-      break;
-      case 3:
-
       break;
     } 
   });
