@@ -131,6 +131,27 @@
   })();
   Game.enemy_functions.update_big_n_heavy = function(mob,P){
     if(!mob.active){return false;}
+    if (mob.spread_out){
+      if (mob.vol[0] || mob.vol[1]){
+        mob.spread_out -= mob.speed * delta;
+        if (mob.spread_out < 0){mob.spread_out = 0;}
+      }else{
+        mob.vol = Game.utils.randomize_direction();
+      }
+    }else{
+      Game.utils.count_down(mob,'cooldown_left',delta);
+      if (Game.utils.proximity(mob,P) < 35){
+        mob.vol = [0, 0];
+        if (!mob.cooldown_left){Game.utils.count_down(mob,'attack_wind_up_left',delta);}
+        if (!mob.attack_wind_up_left){
+          Game.utils.damage(P,mob.damage);
+          mob.attack_wind_up_left = mob.attack_wind_up;
+          mob.cooldown_left = mob.cooldown;
+        }
+      } else {
+        mob.vol = Game.utils.normalize(mob.transform.position.x, mob.transform.position.y, P.transform.position.x, P.transform.position.y);
+      }
+    }
     Game.enemy_functions.move(mob,delta);
     return true;
   };
@@ -154,6 +175,7 @@
       mob.transform.position.y = 920 - mob.col; mob.vol[1] *= -1;
       Game.enemy_functions.point_walk(mob);
     }
+    if (mob.type == 'big_n_heavy'){mob.transform.rotation.z = 0}
   };
 
   Game.enemy_functions.point_walk = function(mob){
