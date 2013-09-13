@@ -7,12 +7,15 @@ window.onload = function(e){
   Game.utils.add_default(Game.config.canvas_id, 'game_canvas');
   Game.utils.add_default(Game.config.fps_counter_id, 'fps_counter');
 
+
+  Game.paused = true;
   Game.update = function(delta){
-    Game.update_player(Game.player, delta);
-    Game.update_projectiles(delta);
-    Game.update_enemies(delta);
-    Game.update_battle_master(Game.bm,delta);
-    
+    if (!Game.paused){
+      Game.update_player(Game.player, delta);
+      Game.update_projectiles(delta);
+      Game.update_enemies(delta);
+      Game.update_battle_master(Game.bm,delta);
+    }
   };
 
   Game.run = (function() {

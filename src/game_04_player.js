@@ -26,7 +26,8 @@
       max_ammo: 6,
       reload_time: 5000,
       reload_time_left: 0,
-      movement: 0
+      movement: 0,
+      range: 200
     },
     bomb: {
       active: false,
@@ -142,7 +143,7 @@
           type: 'vector',
           speed: P.ranged.speed,
           vol: Game.utils.normalize(P.transform.position.x-Game.graphics.camera.x, P.transform.position.y-Game.graphics.camera.y, Game.input.mouse.x, Game.input.mouse.y),
-          range: 250,
+          range: P.ranged.range,
           transform: {
             visible: true,
             position: {x: P.transform.position.x, y: P.transform.position.y, z: 2},
@@ -214,7 +215,7 @@
   Game.player.exp = {};
   var pe = Game.player.exp;
   pe.total = 0;
-  pe.selected = 'bomb';
+  pe.selected = 'melee';
   pe.melee = {
     xp: 0,
     next: 10,
@@ -245,6 +246,7 @@
     if (exp[exp.selected].level < 100){
       exp[exp.selected].xp += amount;
       if (exp[exp.selected].xp >= exp[exp.selected].next){
+        exp[exp.selected].xp -= exp[exp.selected].next;
         exp[exp.selected].level++;
         exp['level_'+exp.selected]();
         for (var i = 0; i < exp[exp.selected].perk_levels.length; i++){

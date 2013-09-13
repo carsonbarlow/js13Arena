@@ -90,7 +90,7 @@
         new_enemy.cooldown_left = 600;
       break;
     }
-    
+    new_enemy.destroy = Game.enemy_functions.destroy;
     new_enemy.die = Game.enemy_functions.die;
     new_enemy.melee_hit = false;
 

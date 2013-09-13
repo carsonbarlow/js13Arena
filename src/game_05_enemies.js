@@ -10,6 +10,10 @@
   };
   Game.enemy_functions.update_lame_brain = function(mob,P,delta){
     if(!mob.active){return false;}
+    if(mob.animator.death_count_left){
+      Game.animator.mob_update(mob,delta);
+      return true;
+    }
     mob.chasing = (Game.utils.proximity(mob, P) < 200);
     if (mob.chasing){
       mob.animator.paused = false;
@@ -49,6 +53,10 @@
 
   Game.enemy_functions.update_stand_n_shoot = function(mob,P,delta){
     if(!mob.active){return false;}
+    if(mob.animator.death_count_left){
+      Game.animator.mob_update(mob,delta);
+      return true;
+    }
     if (mob.spread_out){
       if (mob.vol[0] || mob.vol[1]){
         mob.spread_out -= mob.speed * delta;
@@ -100,6 +108,10 @@
     var p_z, m_z, d, r;
     Game.enemy_functions.update_back_stabber = function(mob,P){
       if(!mob.active){return false;}
+      if(mob.animator.death_count_left){
+        Game.animator.mob_update(mob,delta);
+        return true;
+      }
       if (mob.spread_out){
         if (mob.vol[0] || mob.vol[1]){
           mob.spread_out -= mob.speed * delta;
@@ -141,6 +153,10 @@
   })();
   Game.enemy_functions.update_big_n_heavy = function(mob,P){
     if(!mob.active){return false;}
+    if(mob.animator.death_count_left){
+      Game.animator.mob_update(mob,delta);
+      return true;
+    }
     if (mob.spread_out){
       if (mob.vol[0] || mob.vol[1]){
         mob.spread_out -= mob.speed * delta;
@@ -197,15 +213,29 @@
     Game.utils.damage(this, amount);
     if (!this.hp){
       Game.enemy_functions.die.call(this);
+    }else{
+      this.animator.hurt_count_left = this.animator.hurt_count;
     }
   }
 
   Game.enemy_functions.die = function(){
     Game.player.add_xp(Game.player.exp,this.points);
     Game.bm.enemy_count--;
+    this.animator.death_count_left = 4;
+    // Game.graphics.draw_list[1].splice(Game.graphics.draw_list[1].indexOf(this.transform),0);
+    // Game.graphics.draw_list[0].push(this.transform);
+    for (var i = 0; i < Game.graphics.draw_list[1].length; i++){
+      if (this.transform === Game.graphics.draw_list[1][i]){
+        Game.graphics.draw_list[1].splice(i,1);
+        Game.graphics.draw_list[0].push(this.transform);
+      }
+    }
+  };
+
+  Game.enemy_functions.destroy = function () {
     this.active = false;
     this.transform.visible = false;
-  };
+  }
 
 
 })();

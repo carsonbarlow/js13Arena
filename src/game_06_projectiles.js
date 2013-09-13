@@ -14,7 +14,7 @@
       }
       if (p.source == Game.player){
         for (var i = 0; i < Game.enemies.length; i++){
-          if (Game.utils.collision(p,Game.enemies[i])){
+          if (!Game.enemies[i].animator.death_count_left && Game.utils.collision(p,Game.enemies[i])){
             Game.enemy_functions.do_damage.call(Game.enemies[i],p.damage);
             active = false;
             break;

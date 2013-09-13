@@ -50,9 +50,14 @@
     Game.input.mouse.y = event.y - Game.graphics.canvas.offsetTop;
   });
   window.addEventListener('keydown',function(event){
-    // console.log(event.keyIdentifier);
+    console.log(event.keyIdentifier);
     Game.input.keyboard[Game.input.keyboard.id_to_key[event.keyIdentifier]] = true;
   });
   window.addEventListener('keyup',function(event){
     Game.input.keyboard[Game.input.keyboard.id_to_key[event.keyIdentifier]] = false;
+    if (event.keyIdentifier == 'U+0050'){Game.paused = !Game.paused;
+    } else if (event.keyIdentifier == 'U+0031'){Game.player.exp.selected = 'melee';
+    } else if (event.keyIdentifier == 'U+0032'){Game.player.exp.selected = 'ranged';
+    } else if (event.keyIdentifier == 'U+0033'){Game.player.exp.selected = 'bomb';
+  }
   });
