@@ -10,8 +10,6 @@
   Game.graphics.image = document.createElement('img');
   Game.graphics.image.src = 'sprites.png';
   Game.graphics.camera = {x:0,y:0};
-  // Game.graphics.bg_canvas = document.createElement('canvas');
-  // Game.graphics.bg_canvas.width = Game.graphics.canvas.width;
 
   var image_loaded = false; 
   Game.graphics.draw = function(ctx){
@@ -92,6 +90,13 @@
       ctx.fillText("MANA BURST", 85, 57);
       ctx.strokeRect(50,40,200,20);
 
+      //SCORE:
+      ctx.fillStyle = '#46A343';
+      ctx.fillRect(300,40, 200, 20);
+      ctx.fillStyle = 'rgba(0,0,0,0.5)';
+      ctx.fillText("Score: "+Math.floor(Game.player.exp.total), 335, 57);
+      ctx.strokeRect(300,40,200,20);
+
       //LUCK
       ctx.fillStyle = '#7EF280';
       ctx.fillRect(570, 210-(Game.bm.luck*2), 20, Game.bm.luck*2);
@@ -116,6 +121,14 @@
       }
       ctx.strokeRect(600,10,20,200);
 
+
+      if (Game.player.isDead){
+        ctx.fillStyle = '#BE0000';
+        ctx.font = "bold 120px sans-serif";
+        ctx.fillText("DEAD!", 160, 300);
+        ctx.font = "bold 40px sans-serif";
+        ctx.fillText("Press 'R' to replay!", 160, 400);
+      }
 
       ctx.restore();
     }else{

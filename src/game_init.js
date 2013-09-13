@@ -8,13 +8,15 @@ window.onload = function(e){
   Game.utils.add_default(Game.config.fps_counter_id, 'fps_counter');
 
 
-  Game.paused = true;
+  Game.paused = false;
   Game.update = function(delta){
     if (!Game.paused){
       Game.update_player(Game.player, delta);
-      Game.update_projectiles(delta);
-      Game.update_enemies(delta);
-      Game.update_battle_master(Game.bm,delta);
+      if (!Game.player.isDead){
+        Game.update_projectiles(delta);
+        Game.update_enemies(delta);
+        Game.update_battle_master(Game.bm,delta);
+      }
     }
   };
 
@@ -57,4 +59,15 @@ window.onload = function(e){
   }
   window.each_frame(Game.run);
 
+
+  Game.reset_game = function (){
+    if (Game.player.isDead){
+      Game.enemies = [];
+      Game.projectiles = [];
+      Game.graphics.draw_list = [[],[],[]];
+      Game.bm._reset();
+      Game.player._reset();
+      Game.graphics.camera = {x:0,y:0};
+    }
+  }
 };

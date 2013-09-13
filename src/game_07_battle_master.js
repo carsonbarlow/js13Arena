@@ -209,6 +209,16 @@
 
   Game.bm.luck = 100;
 
+  Game.bm._reset = function(){
+    Game.bm.luck = 100;
+    portal_count = 5;
+    wave_base = 20;
+    Game.bm.wave = 0;
+    Game.bm.enemy_count = 0;
+    Game.bm.enemy_count_total = 0;
+    Game.bm.set_portals(portal_count);
+    Game.bm.do_wave();
+  };
 
   Game.bm.set_portals(portal_count);
   Game.bm.do_wave();

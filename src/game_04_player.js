@@ -1,9 +1,9 @@
 (function(){
 
   Game.player = {
-    hp: 10,
+    hp: 1,
     max_hp: 10,
-    health_regen: 1,
+    health_regen: 0,
     health_regen_time: 5000,
     speed: 200,
     col: 12,
@@ -46,14 +46,26 @@
       offset: {x: 322, y: 111, r: 1},
       width: 28,
       height: 28
-    }
+    },
+    isDead: false
   }
   Game.graphics.draw_list[1].push(Game.player.transform);
+
   Game.player.die = function(){
-    console.log(this.hp);
+    if (!Game.player.isDead){
+      Game.player.isDead = true;
+      Game.player.transform.width = 32; 
+      Game.player.transform.height = 32;
+      Game.player.transform.offset.x = 286;
+      Game.player.transform.offset.y = 106;
+    }
+    if (Game.input.keyboard.r){
+      Game.reset_game();
+    }
   }
 
   Game.update_player = function(P, delta){
+    if (P.hp == 0){P.die();return;}
     if (Game.input.keyboard.a){P.transform.position.x -= (P.speed * delta);}
     if (Game.input.keyboard.d){P.transform.position.x += (P.speed * delta);}
     if (Game.input.keyboard.w){P.transform.position.y -= (P.speed * delta);}
@@ -245,7 +257,7 @@
     exp.total += amount;
     if (exp[exp.selected].level < 100){
       exp[exp.selected].xp += amount;
-      if (exp[exp.selected].xp >= exp[exp.selected].next){
+      if (exp[exp.selected].xp+1 >= exp[exp.selected].next){
         exp[exp.selected].xp -= exp[exp.selected].next;
         exp[exp.selected].level++;
         exp['level_'+exp.selected]();
@@ -295,6 +307,59 @@
     P.exp.perk_radius_200 = function(){P.bomb.col = 200;};
     P.exp.perk_cooldown_40 = function(){P.bomb.cooldown = 10000 * 0.4};
     P.exp.perk_panic_bomb = function(){};
+
+
+    P._reset = function () {
+      P.hp = P.max_hp = 10;
+      P.health_regen = 1;
+      P.speed = 200;
+      P.melee.damage = 4;
+      P.melee.reach = 35;
+      P.melee.cooldown_left = 0;
+      P.ranged.damage = 3;
+      P.ranged.cooldown = 500;
+      P.ranged.cooldown_left = 0;
+      P.ranged.ammo = P.ranged.max_ammo = 6;
+      P.ranged.reload_time = 5000;
+      P.ranged.reload_time_left = 0;
+      P.ranged.range = 200;
+      P.bomb.active = false;
+      P.bomb.damage = 10;
+      P.bomb.col = 100;
+      P.bomb.cooldown = 10000;
+      P.bomb.cooldown_left = 0;
+      P.transform = {
+        visible: true,
+        position: {x: 100, y: 100, z: 1},
+        rotation: {x: 0, y: 0, z: 0.5},
+        scale: {x: 4, y: 4},
+        offset: {x: 322, y: 111, r: 1},
+        width: 28,
+        height: 28
+      };
+      P.isDead = false;
+      Game.player.melee.transform = {
+        visible: true,
+        position: {x: 100, y: 100, z: 2},
+        rotation: {x: 0, y: 0, z: 0},
+        scale: {x: 4, y: 4},
+        offset: {x: 188, y: 104, r: 0},
+        width: 31,
+        height: 15
+      };
+      P.exp.total = 0;
+      P.exp.melee.xp = 0;
+      P.exp.melee.next = 10;
+      P.exp.melee.level = 0;
+      P.exp.ranged.xp = 0;
+      P.exp.ranged.next = 10;
+      P.exp.ranged.level = 0;
+      P.exp.bomb.xp = 0;
+      P.exp.bomb.next = 10;
+      P.exp.bomb.level = 0;
+      Game.graphics.draw_list[1].push(Game.player.transform);
+    };
+
 
   })(Game.player);
   

@@ -50,7 +50,7 @@
     Game.input.mouse.y = event.y - Game.graphics.canvas.offsetTop;
   });
   window.addEventListener('keydown',function(event){
-    console.log(event.keyIdentifier);
+    // console.log(event.keyIdentifier);
     Game.input.keyboard[Game.input.keyboard.id_to_key[event.keyIdentifier]] = true;
   });
   window.addEventListener('keyup',function(event){
