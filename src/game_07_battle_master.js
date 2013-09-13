@@ -57,7 +57,7 @@
     new_enemy.max_hp = new_enemy.hp;
     new_enemy.vol = [0,0];
     new_enemy.chasing = false;
-    // new_enemy.animator = Game.animator.setup_animation(new_enemy);
+    new_enemy.animator = Game.animator.setup_animation(new_enemy);
     switch (new_enemy.type){
       case 'lame_brain':
         new_enemy.col = 14;
@@ -88,7 +88,6 @@
         new_enemy.attack_wind_up_left = 400;
         new_enemy.cooldown = 600;
         new_enemy.cooldown_left = 600;
-        new_enemy.animator = Game.animator.setup_animation(new_enemy);
       break;
     }
     

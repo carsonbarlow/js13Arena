@@ -24,7 +24,7 @@
         if (by == 0 || by == 23 || bx == 0 || bx == 31){
           ctx.drawImage(Game.graphics.image,0,93,56,56,bx*40-Game.graphics.camera.x,by*40-Game.graphics.camera.y,40,40);
         }else{
-          ctx.drawImage(Game.graphics.image,420,2,25,25,bx*40-Game.graphics.camera.x,by*40-Game.graphics.camera.y,40,40);
+          ctx.drawImage(Game.graphics.image,420,0,40,40,bx*40-Game.graphics.camera.x,by*40-Game.graphics.camera.y,40,40);
         }
       }
     }

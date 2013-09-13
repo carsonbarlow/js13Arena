@@ -12,6 +12,7 @@
     if(!mob.active){return false;}
     mob.chasing = (Game.utils.proximity(mob, P) < 200);
     if (mob.chasing){
+      mob.animator.paused = false;
       mob.transform.rotation.z = Game.utils.point_to(mob.transform.position.x, mob.transform.position.y, P.transform.position.x, P.transform.position.y);
       if (Game.utils.proximity(mob,P) < 35){
         mob.vol = [0, 0];
@@ -29,6 +30,7 @@
         mob.vol = Game.utils.randomize_direction();
         Game.enemy_functions.point_walk(mob);
         mob.wonder = Math.random()*275+75;
+        mob.animator.paused = false;
       }
     }else if (mob.wonder){
       mob.wonder -= mob.speed * delta;
@@ -36,9 +38,11 @@
         mob.wonder = 0;
         mob.vol = [0,0];
         mob.standing = Math.random()*250+500;
+        mob.animator.paused = true;
       }
     }
     Game.enemy_functions.move(mob,delta);
+    Game.animator.mob_update(mob,delta);
     return true;
   };
 
@@ -56,7 +60,9 @@
     }else{
       mob.vol = Game.utils.normalize(mob.transform.position.x, mob.transform.position.y, P.transform.position.x, P.transform.position.y);
       Game.enemy_functions.point_walk(mob);
+      mob.animator.paused = false;
       if (Game.utils.proximity(mob, P) < 250){
+        mob.animator.paused = true;
         mob.vol = [0,0]
         Game.utils.count_down(mob, 'cooldown_left', delta);
         if (!mob.cooldown_left){
@@ -84,6 +90,7 @@
       }
     }
     Game.enemy_functions.move(mob,delta);
+    Game.animator.mob_update(mob,delta);
     return true;
   };
 
@@ -105,6 +112,7 @@
         Game.utils.count_down(mob,'cooldown_left',delta);
         // if the player's back is turned.
         mob.transform.rotation.z = Game.utils.point_to(mob.transform.position.x, mob.transform.position.y, P.transform.position.x, P.transform.position.y);
+        mob.animator.paused = false;
         p_z = (P.transform.rotation.z + two_pi)%two_pi;
         m_z = (mob.transform.rotation.z + two_pi)%two_pi;
         d = Math.abs(p_z - m_z) % two_pi;
@@ -123,9 +131,11 @@
           }
         }else{
           mob.vol = [0,0];
+          mob.animator.paused = true;
         }
       }
       Game.enemy_functions.move(mob,delta);
+      Game.animator.mob_update(mob,delta);
       return true;
     };
   })();
