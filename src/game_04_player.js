@@ -3,7 +3,7 @@
   Game.player = {
     hp: 10,
     max_hp: 10,
-    health_regen: 0,
+    health_regen: 1,
     health_regen_time: 5000,
     speed: 200,
     col: 12,

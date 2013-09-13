@@ -102,18 +102,37 @@
   var type_population = [10, 4, 2, 1];
   var wave_base = 20;
   var bm = Game.bm;
-  bm.wave = 0;
+  bm.wave = 4;
   bm.enemy_count = 0;
   bm.enemy_count_total = 0;
   var pts;
   Game.bm.craft_enemy = function(obj, points){
+    if (points > 50){
+      obj.tier = 3;
+    }else if(points > 30){
+      obj.tier = 2;
+    }else if(points > 15){
+      obj.tier = 1;
+    }else{
+      obj.tier = 0;
+    }
     var enemy = Game.utils.clone(obj);
     switch (obj.type){
       case 'lame_brain':
-      default:
+      case 'stand_n_shoot':
         enemy.hp += Math.round(points * 0.5 /3 );
         enemy.speed += Math.round(points * 0.5 / 3);
         enemy.damage += Math.round(points * 0.34 / 3);
+        break;
+      case 'back_stabber':
+        enemy.hp += Math.round(points * 0.3 /3 );
+        enemy.speed += Math.round(points * 0.8 / 3);
+        enemy.damage += Math.round(points * 0.7 / 3);
+        break;
+      case 'big_n_heavy':
+        enemy.hp += Math.round(points * 1 /3 );
+        enemy.speed += Math.round(points * 0.25 / 3);
+        enemy.damage += Math.round(points * 1 / 3);
         break;
     }
     enemy.points = points;
@@ -125,7 +144,12 @@
     bm.wave++;
     wave_base *= 1.08;
     // figure in luck meter...
-    var wave_val = wave_base * (1+(((100-Game.bm.luck)/100)*4));
+    var _luck = 100 - Game.bm.luck;
+    if (_luck < 0){_luck = 0;}
+    _luck /= 100;
+    _luck *= 4;
+    _luck += 1;
+    var wave_val = wave_base * _luck;
     // distribute points...
     var e_ratio = [];
     // bm.enemy_count_total = bm.enemy_count;
@@ -147,7 +171,7 @@
       }
     }
     bm.enemy_count_total = bm.enemy_count += enemies_to_spawn;
-    bm.wave_time_left = bm.wave_time = bm.enemy_count_total * 1250;
+    bm.wave_time_left = bm.wave_time = bm.enemy_count_total * 1500;
   };
 
   var portal_layout = [];
@@ -216,6 +240,7 @@
     Game.bm.wave = 0;
     Game.bm.enemy_count = 0;
     Game.bm.enemy_count_total = 0;
+    type_population = [10, 4, 2, 1];
     Game.bm.set_portals(portal_count);
     Game.bm.do_wave();
   };

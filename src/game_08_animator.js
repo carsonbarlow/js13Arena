@@ -40,7 +40,7 @@
       }
     }
     new_obj.tier = 0;
-    new_obj.tier_base = 0;
+    new_obj.tier_base = obj.tier;
     new_obj.loop_index = 0;
     new_obj.paused = false;
     new_obj.hurt_count = 8;
