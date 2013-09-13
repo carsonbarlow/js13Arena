@@ -1,7 +1,7 @@
 (function(){
 
   Game.player = {
-    hp: 1,
+    hp: 10,
     max_hp: 10,
     health_regen: 0,
     health_regen_time: 5000,
@@ -10,7 +10,7 @@
     melee: {
       active: false,
       damage: 4,
-      reach: 35,
+      reach: 25,
       cooldown: 500,
       cooldown_left: 0,
       duration: 200,
@@ -211,15 +211,15 @@
     height: 10
   };
   var melee_col_obj = {
-    col: 5,
+    col: 10,
     transform: {
       visible: true,
       position: {x: 100, y: 100, z: 2},
       rotation: {x: 0, y: 0, z: 0},
       scale: {x: 4, y: 4},
       offset: {x: 292, y: 46, r: 0},
-      width: 8,
-      height: 8
+      height: 20,
+      width: 20
     }
   }
   // Game.graphics.draw_list[2].push(melee_col_obj.transform);
@@ -229,10 +229,11 @@
   pe.total = 0;
   pe.selected = 'melee';
   pe.melee = {
-    xp: 0,
+    xp: 25,
     next: 10,
     level: 0,
     perk_levels: [30,60,100],
+    // perk_levels: [1,2,3,4],
     perk_names: ['sword_2','sword_3','swipe']
   };
   pe.ranged = {
@@ -257,7 +258,7 @@
     exp.total += amount;
     if (exp[exp.selected].level < 100){
       exp[exp.selected].xp += amount;
-      if (exp[exp.selected].xp+1 >= exp[exp.selected].next){
+      if (exp[exp.selected].xp >= exp[exp.selected].next){
         exp[exp.selected].xp -= exp[exp.selected].next;
         exp[exp.selected].level++;
         exp['level_'+exp.selected]();
@@ -270,7 +271,7 @@
         Game.player.ranged.reload_time_left = 0;
         Game.player.ranged.ammo = Game.player.ranged.max_ammo;
         Game.player.bomb.cooldown_left = 0;
-        exp[exp.selected].next = (level_xp_base * (Math.pow(1.05,exp[exp.selected].level))+(5*exp[exp.selected].level));
+        exp[exp.selected].next = Math.floor(level_xp_base * (Math.pow(1.05,exp[exp.selected].level))+(5*exp[exp.selected].level));
       }
     }
   };
@@ -292,8 +293,20 @@
       P.health_regen += 0.5;
     };
 
-    P.exp.perk_sword_2 = function(){};
-    P.exp.perk_sword_3 = function(){};
+    P.exp.perk_sword_2 = function(){
+      P.melee.transform.width = 37;
+      P.melee.transform.height = 16;
+      P.melee.transform.offset.x = 183;
+      P.melee.transform.offset.y = 118;
+      P.melee.reach = 40;
+    };
+    P.exp.perk_sword_3 = function(){
+      P.melee.transform.width = 45;
+      P.melee.transform.height = 15;
+      P.melee.transform.offset.x = 176;
+      P.melee.transform.offset.y = 134;
+      P.melee.reach = 45;
+    };
     P.exp.perk_swipe = function(){};
 
     P.exp.perk_clip_x2 = function(){P.ranged.max_ammo *= 2;};
@@ -314,7 +327,7 @@
       P.health_regen = 1;
       P.speed = 200;
       P.melee.damage = 4;
-      P.melee.reach = 35;
+      P.melee.reach = 25;
       P.melee.cooldown_left = 0;
       P.ranged.damage = 3;
       P.ranged.cooldown = 500;
